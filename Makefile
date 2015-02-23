@@ -2,7 +2,7 @@ CC = gcc
 
 CFLAGS = -std=c99 -fPIC -Wall -Wno-error=unused-variable -Werror -Wno-error=deprecated-declarations
 #CFLAGS += -O2
-CFLAGS += -g
+CFLAGS += -g -Wno-deprecated-declarations
 
 GTK2_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-2.0)
 GTK2_LIBS = $(shell pkg-config --libs gtk+-2.0)
