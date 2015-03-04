@@ -1,6 +1,7 @@
 CC = gcc
 
-CFLAGS = -std=c99 -fPIC -Wall -Wno-error=unused-variable -Werror -Wno-error=deprecated-declarations -Wno-error=unused-but-set-variable
+CFLAGS = -std=c99 -fPIC -Wall -Werror -Wfatal-errors
+CFLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=unused-function
 #CFLAGS += -O2
 CFLAGS += -g -Wno-deprecated-declarations
 
