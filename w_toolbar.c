@@ -29,7 +29,6 @@ typedef struct
 
 ddb_gtkui_widget_t* w_toolbar_create()
 {
-    printf("[%s]\n", __FUNCTION__);
     w_toolbar_t *w = malloc(sizeof(w_toolbar_t));
     memset(w, 0, sizeof(w_toolbar_t));
 
@@ -69,8 +68,6 @@ void free_items_list(GSList *items_list)
 
 void w_toolbar_destroy(ddb_gtkui_widget_t *w)
 {
-    printf("[%s]\n", __FUNCTION__);
-
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
     free_items_list(toolbar->items_list);
@@ -116,8 +113,6 @@ GSList* create_default_toolbar_items()
 
 const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
 {
-    printf("[%s]\n", __FUNCTION__);
-
     #define PARAM_LIST_SIZE 256
 
     char param_list[PARAM_LIST_SIZE] = {0};
@@ -152,7 +147,6 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
 
 void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 {
-    printf("[%s]\n", __FUNCTION__);
     strncat(s, " layout=\"play|gtk-media-play,pause|gtk-media-pause,stop|gtk-media-stop,prev|gtk-media-previous,next|gtk-media-next\"", sz);
 }
 
@@ -270,8 +264,6 @@ void fill_toolbar(w_toolbar_t *toolbar)
 
 void w_toolbar_init(ddb_gtkui_widget_t *w)
 {
-    printf("[%s]\n", __FUNCTION__);
-
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
     fill_toolbar(toolbar);
@@ -286,7 +278,6 @@ void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
 {
-    printf("[%s]\n", __FUNCTION__);
     GtkWidget *customize_menu_item = gtk_menu_item_new_with_mnemonic("Customize");
     gtk_widget_show(customize_menu_item);
 
