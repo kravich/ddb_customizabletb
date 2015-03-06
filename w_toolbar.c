@@ -13,6 +13,8 @@ void w_toolbar_init(ddb_gtkui_widget_t *w);
 void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu);
 void w_toolbar_destroy(ddb_gtkui_widget_t *w);
 
+GSList* create_default_toolbar_items();
+
 typedef struct
 {
     char *action_name;
@@ -42,6 +44,8 @@ ddb_gtkui_widget_t* w_toolbar_create()
     gtk_widget_show((GtkWidget*)(w->base.widget));
 
     gtkui->w_override_signals(w->base.widget, w);
+
+    w->items_list = create_default_toolbar_items();
 
     return (ddb_gtkui_widget_t*)w;
 }
@@ -141,7 +145,7 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
     //printf("p: [%s]\n", p);
 
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
-    toolbar->items_list = create_default_toolbar_items();
+
 
     return p;
 }
