@@ -111,35 +111,41 @@ GSList* create_default_toolbar_items()
     return toolbar_items;
 }
 
-const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
+const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
 {
-    #define PARAM_LIST_SIZE 256
-
-    char param_list[PARAM_LIST_SIZE] = {0};
-
     const char *p = s;
     unsigned int n = 0;
 
     while((*p != '\0') &&
           (*p != '{'))
     {
-        if(n < (PARAM_LIST_SIZE - 1))
+        if(n < (buff_size - 1))
         {
-            param_list[n] = *p;
+            buff[n] = *p;
             n++;
         }
 
         p++;
     }
 
-    param_list[n] = '\0';
+    buff[n] = '\0';
 
     if(*p == '{')
         p++;
 
-    //printf("p: [%s]\n", p);
+    return p;
+}
 
+const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
+{
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
+
+    #define PARAMS_SIZE 256
+    char params[PARAMS_SIZE] = {0};
+
+    const char *p = extract_widget_params(s, params, PARAMS_SIZE);
+
+
 
 
     return p;
