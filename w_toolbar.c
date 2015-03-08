@@ -138,17 +138,52 @@ const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
     return p;
 }
 
+void extract_layout_param(const char *params, char *buff, size_t buff_size)
+{
+    assert(buff_size != 0);
+
+    buff[0] = '\0';
+
+    char key[256] = {0};
+    char val[256] = {0};
+
+    // TODO: use more reliable way to parse layout
+    int vars_read = sscanf(params, "%255[^=]=\"%255[^=\"]\"", key, val);
+    if(vars_read != 2)
+    {
+        printf("vars read: %d\n", vars_read);
+        return;
+    }
+
+    g_strstrip(key);
+    g_strstrip(val);
+
+    if(strcmp(key, "layout") == 0)
+    {
+        strncpy(buff, val, buff_size - 1);
+    }
+}
+
+GSList* toolbar_items_deserialize(char *layout);
+
 const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
     #define PARAMS_SIZE 256
     char params[PARAMS_SIZE] = {0};
-
     const char *p = extract_widget_params(s, params, PARAMS_SIZE);
 
+    char layout_str[256];
+    extract_layout_param(params, layout_str, 256);
 
+    GSList *saved_toolbar_items = toolbar_items_deserialize(layout_str);
 
+    if(saved_toolbar_items != NULL)
+    {
+        free_items_list(toolbar->items_list);
+        toolbar->items_list = saved_toolbar_items;
+    }
 
     return p;
 }
@@ -187,6 +222,37 @@ void toolbar_items_serialize(GSList *toolbar_items, char *buff, size_t buff_size
 
         current_node = g_slist_next(current_node);
     }
+}
+
+GSList* toolbar_items_deserialize(char *layout)
+{
+    char **elements = g_strsplit(layout, ",", -1);
+
+    GSList *toolbar_items = NULL;
+    char **current_element = elements;
+    while(*current_element != NULL)
+    {
+        ToolbarItem *item = malloc(sizeof(ToolbarItem));
+
+        char **parts = g_strsplit(*current_element, "|", 2);
+
+        if(parts[0] == NULL || parts[1] == NULL || item == NULL)
+        {
+            g_strfreev(parts);
+            g_strfreev(elements);
+            free_items_list(toolbar_items);
+            return NULL;
+        }
+
+        item->action_name = g_strdup(parts[0]); // TODO: should we check the return value of g_strdup()?
+        item->icon_name = g_strdup(parts[1]);
+
+        toolbar_items = g_slist_append(toolbar_items, item);
+
+        current_element++;
+    }
+
+    return toolbar_items;
 }
 
 void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
