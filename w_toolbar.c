@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "toolbar_items.h"
+#include "interface.h"
 
 extern DB_functions_t *deadbeef;
 extern ddb_gtkui_t *gtkui;
@@ -258,7 +259,9 @@ void w_toolbar_init(ddb_gtkui_widget_t *w)
 
 void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-    printf("Customize\n");
+    GtkWidget *d = create_tb_customization_dialog();
+    gtk_dialog_run(GTK_DIALOG(d));
+    gtk_widget_destroy(d);
 }
 
 void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
