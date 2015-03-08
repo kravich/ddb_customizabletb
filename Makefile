@@ -12,7 +12,7 @@ GTK3_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3_LIBS = $(shell pkg-config --libs gtk+-3.0)
 
 # prepare lists of .c and .h files
-INPUT_FILES = ddb_customizabletb.c w_toolbar.c w_toolbar.h
+INPUT_FILES = ddb_customizabletb.c w_toolbar.c w_toolbar.h toolbar_items.c toolbar_items.h
 SOURCES = $(filter %.c, $(INPUT_FILES))
 HEADERS = $(filter %.h, $(INPUT_FILES))
 
