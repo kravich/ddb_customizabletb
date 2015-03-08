@@ -170,12 +170,13 @@ void toolbar_items_serialize(GSList *toolbar_items, char *buff, size_t buff_size
         else
             fmt = "%s|%s";
 
-        char item_str[256] = {0};
-        snprintf(item_str, 256, fmt, current_item->action_name, current_item->icon_name);
+        char *item_str = g_strdup_printf(fmt, current_item->action_name, current_item->icon_name);
 
         size_t chars_to_add = strlen(item_str);
 
         strncat(buff, item_str, buff_free_space);
+
+        g_free(item_str);
 
         if(buff_free_space > chars_to_add)
             buff_free_space -= chars_to_add;
@@ -193,10 +194,9 @@ void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
     char serialized_layout[256];
     toolbar_items_serialize(toolbar->items_list, serialized_layout, 256);
 
-    char layout_param[256];
-    snprintf(layout_param, 256, " layout=\"%s\"", serialized_layout);
-
+    char *layout_param = g_strdup_printf(" layout=\"%s\"", serialized_layout);
     strncat(s, layout_param, sz);
+    g_free(layout_param);
 }
 
 GtkWidget* create_image_by_name(const char *button_icon_name)
