@@ -1,3 +1,4 @@
 codelite
 *.o
 *.so
+*.bak
