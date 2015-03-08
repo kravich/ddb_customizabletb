@@ -78,6 +78,14 @@ GSList* create_default_toolbar_items()
     GSList *toolbar_items = NULL;
     ToolbarItem *item = NULL;
 
+    // TODO: add check for malloc() return value
+
+    item = malloc(sizeof(ToolbarItem));
+    item->action_name = g_strdup("stop");
+    item->icon_name = g_strdup("gtk-media-stop");
+
+    toolbar_items = g_slist_append(toolbar_items, item);
+
     item = malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("play");
     item->icon_name = g_strdup("gtk-media-play");
@@ -87,12 +95,6 @@ GSList* create_default_toolbar_items()
     item = malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("toggle_pause");
     item->icon_name = g_strdup("gtk-media-pause");
-
-    toolbar_items = g_slist_append(toolbar_items, item);
-
-    item = malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("stop");
-    item->icon_name = g_strdup("gtk-media-stop");
 
     toolbar_items = g_slist_append(toolbar_items, item);
 
