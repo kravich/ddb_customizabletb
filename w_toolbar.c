@@ -151,9 +151,52 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
     return p;
 }
 
+void toolbar_items_serialize(GSList *toolbar_items, char *buff, size_t buff_size)
+{
+    assert(buff_size != 0);
+
+    size_t buff_free_space = buff_size - 1;
+    buff[0] = '\0';
+
+    GSList *current_node = toolbar_items;
+    while(current_node != NULL)
+    {
+        ToolbarItem *current_item = (ToolbarItem*)current_node->data;
+
+        char *fmt = NULL;
+
+        if(current_node->next != NULL)
+            fmt = "%s|%s,";
+        else
+            fmt = "%s|%s";
+
+        char item_str[256] = {0};
+        snprintf(item_str, 256, fmt, current_item->action_name, current_item->icon_name);
+
+        size_t chars_to_add = strlen(item_str);
+
+        strncat(buff, item_str, buff_free_space);
+
+        if(buff_free_space > chars_to_add)
+            buff_free_space -= chars_to_add;
+        else
+            break;
+
+        current_node = g_slist_next(current_node);
+    }
+}
+
 void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 {
-    strncat(s, " layout=\"play|gtk-media-play,pause|gtk-media-pause,stop|gtk-media-stop,prev|gtk-media-previous,next|gtk-media-next\"", sz);
+    w_toolbar_t *toolbar = (w_toolbar_t*)w;
+
+    char serialized_layout[256];
+    toolbar_items_serialize(toolbar->items_list, serialized_layout, 256);
+
+    char layout_param[256];
+    snprintf(layout_param, 256, " layout=\"%s\"", serialized_layout);
+
+    strncat(s, layout_param, sz);
 }
 
 GtkWidget* create_image_by_name(const char *button_icon_name)
