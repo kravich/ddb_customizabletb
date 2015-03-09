@@ -271,8 +271,14 @@ void empty_hbox(GtkBox *hbox)
     g_list_free(list);
 }
 
-void w_toolbar_reinitialize(w_toolbar_t *toolbar)
+void w_toolbar_set_new_items(w_toolbar_t *toolbar, GSList *new_toolbar_items)
 {
+    if(new_toolbar_items == NULL)
+        return;
+
+    free_items_list(toolbar->items_list);
+    toolbar->items_list = new_toolbar_items;
+
     empty_hbox(GTK_BOX(toolbar->base.widget));
     fill_toolbar(toolbar);
     gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, toolbar);
