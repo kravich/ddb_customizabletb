@@ -246,6 +246,9 @@ void fill_toolbar(w_toolbar_t *toolbar)
 
         current_node = g_slist_next(current_node);
     }
+
+    // this is required since deadbeef sets size_request explicitly
+    gtk_widget_set_size_request(toolbar->base.widget, -1, -1);
 }
 
 void w_toolbar_init(ddb_gtkui_widget_t *w)
