@@ -257,8 +257,32 @@ void w_toolbar_init(ddb_gtkui_widget_t *w)
     gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, w);
 }
 
+void empty_hbox(GtkBox *hbox)
+{
+    GList *list = gtk_container_get_children(GTK_CONTAINER(hbox));
+
+    for(GList *it = list; it != NULL; it = g_list_next(it)) {
+        gtk_widget_destroy(GTK_WIDGET(it->data));
+    }
+
+    g_list_free(list);
+}
+
+void w_toolbar_reinitialize(w_toolbar_t *toolbar)
+{
+    empty_hbox(GTK_BOX(toolbar->base.widget));
+    fill_toolbar(toolbar);
+    //gtk_widget_queue_resize(toolbar->base.widget);
+    gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, toolbar);
+
+    GtkWidget *mainwin = gtkui->get_mainwin();
+    gtk_widget_queue_resize(mainwin);
+}
+
 void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+    w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
+
     GtkWidget *d = create_tb_customization_dialog();
     gtk_dialog_run(GTK_DIALOG(d));
     gtk_widget_destroy(d);
