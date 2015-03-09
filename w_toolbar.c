@@ -272,11 +272,7 @@ void w_toolbar_reinitialize(w_toolbar_t *toolbar)
 {
     empty_hbox(GTK_BOX(toolbar->base.widget));
     fill_toolbar(toolbar);
-    //gtk_widget_queue_resize(toolbar->base.widget);
     gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, toolbar);
-
-    GtkWidget *mainwin = gtkui->get_mainwin();
-    gtk_widget_queue_resize(mainwin);
 }
 
 void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
