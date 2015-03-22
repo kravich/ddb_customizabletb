@@ -6,6 +6,7 @@
 
 #include "toolbar_items.h"
 #include "interface.h"
+#include "customization_dialog.h"
 
 extern DB_functions_t *deadbeef;
 extern ddb_gtkui_t *gtkui;
@@ -273,6 +274,8 @@ void empty_hbox(GtkBox *hbox)
 
 void w_toolbar_set_new_items(w_toolbar_t *toolbar, GSList *new_toolbar_items)
 {
+    printf("Updating toolbar items\n");
+
     if(new_toolbar_items == NULL)
         return;
 
@@ -288,9 +291,9 @@ void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
 
-    GtkWidget *d = create_tb_customization_dialog();
-    gtk_dialog_run(GTK_DIALOG(d));
-    gtk_widget_destroy(d);
+    GSList *new_toolbar_items = run_customization_dialog(toolbar->items_list);
+    if(new_toolbar_items != NULL)
+        w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }
 
 void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)

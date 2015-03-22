@@ -31,6 +31,8 @@ create_tb_customization_dialog (void)
 {
   GtkWidget *tb_customization_dialog;
   GtkWidget *dialog_vbox1;
+  GtkWidget *treeview_scrolled_window;
+  GtkWidget *tb_items_treeview;
   GtkWidget *dialog_action_area1;
   GtkWidget *cancelbutton1;
   GtkWidget *okbutton1;
@@ -42,6 +44,15 @@ create_tb_customization_dialog (void)
 
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (tb_customization_dialog));
   gtk_widget_show (dialog_vbox1);
+
+  treeview_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (treeview_scrolled_window);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox1), treeview_scrolled_window, TRUE, TRUE, 0);
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (treeview_scrolled_window), GTK_SHADOW_IN);
+
+  tb_items_treeview = gtk_tree_view_new ();
+  gtk_widget_show (tb_items_treeview);
+  gtk_container_add (GTK_CONTAINER (treeview_scrolled_window), tb_items_treeview);
 
   dialog_action_area1 = gtk_dialog_get_action_area (GTK_DIALOG (tb_customization_dialog));
   gtk_widget_show (dialog_action_area1);
@@ -60,6 +71,8 @@ create_tb_customization_dialog (void)
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, tb_customization_dialog, "tb_customization_dialog");
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_vbox1, "dialog_vbox1");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, treeview_scrolled_window, "treeview_scrolled_window");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, tb_items_treeview, "tb_items_treeview");
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_action_area1, "dialog_action_area1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, cancelbutton1, "cancelbutton1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, okbutton1, "okbutton1");

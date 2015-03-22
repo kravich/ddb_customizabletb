@@ -18,7 +18,8 @@ w_toolbar.c w_toolbar.h \
 toolbar_items.c toolbar_items.h \
 interface.c interface.h \
 callbacks.c callbacks.h \
-support.c support.h
+support.c support.h \
+customization_dialog.c customization_dialog.h
 
 SOURCES = $(filter %.c, $(INPUT_FILES))
 HEADERS = $(filter %.h, $(INPUT_FILES))
