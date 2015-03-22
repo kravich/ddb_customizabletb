@@ -37,7 +37,7 @@ GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id)
         stock_id = "gtk-missing-image";
 
     GtkWidget *image = gtk_image_new();
-    g_object_ref(image);
+    g_object_ref_sink(image);
 
     GdkPixbuf *pixbuf = gtk_widget_render_icon(image, stock_id, GTK_ICON_SIZE_BUTTON, NULL);
 
