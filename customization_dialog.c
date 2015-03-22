@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include "interface.h"
 #include "support.h"
@@ -82,17 +83,128 @@ GSList* extract_items_from_list(GtkListStore *items_list)
     return new_items;
 }
 
+void on_button_add_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+
+    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
+    if(model == NULL)
+        return;
+
+    GtkListStore *items_list = GTK_LIST_STORE(model);
+}
+
+void on_button_remove_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+
+    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
+    if(model == NULL)
+        return;
+
+    GtkListStore *items_list = GTK_LIST_STORE(model);
+
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
+    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+        return;
+
+    GtkTreeIter selected_iter;
+    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
+
+    gtk_list_store_remove(items_list, &selected_iter);
+}
+
+void on_button_up_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+
+    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
+    if(model == NULL)
+        return;
+
+    GtkListStore *items_list = GTK_LIST_STORE(model);
+
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
+    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+        return;
+
+    GtkTreeIter selected_iter;
+    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
+
+    GtkTreePath *prev_row_path = gtk_tree_model_get_path(model, &selected_iter);
+    gtk_tree_path_prev(prev_row_path);
+
+    GtkTreeIter prev_row_iter;
+    if(!gtk_tree_model_get_iter(model, &prev_row_iter, prev_row_path))
+    {
+        gtk_tree_path_free(prev_row_path);
+        return;
+    }
+
+    gtk_tree_path_free(prev_row_path);
+
+    gtk_list_store_swap(items_list, &selected_iter, &prev_row_iter);
+}
+
+void on_button_down_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+
+    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
+    if(model == NULL)
+        return;
+
+    GtkListStore *items_list = GTK_LIST_STORE(model);
+
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
+    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+        return;
+
+    GtkTreeIter selected_iter;
+    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
+
+    GtkTreePath *next_row_path = gtk_tree_model_get_path(model, &selected_iter);
+    gtk_tree_path_next(next_row_path);
+
+    GtkTreeIter next_row_iter;
+    if(!gtk_tree_model_get_iter(model, &next_row_iter, next_row_path))
+    {
+        gtk_tree_path_free(next_row_path);
+        return;
+    }
+
+    gtk_tree_path_free(next_row_path);
+
+    gtk_list_store_swap(items_list, &selected_iter, &next_row_iter);
+}
+
+void dialog_connect_signals(GtkWidget *dialog)
+{
+    GtkWidget *button_add = lookup_widget(dialog, "button_add");
+    GtkWidget *button_remove = lookup_widget(dialog, "button_remove");
+    GtkWidget *button_up = lookup_widget(dialog, "button_up");
+    GtkWidget *button_down = lookup_widget(dialog, "button_down");
+    GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
+
+    assert(button_add != NULL);
+    assert(button_remove != NULL);
+    assert(button_up != NULL);
+    assert(button_down != NULL);
+    assert(items_treeview != NULL);
+
+    g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), items_treeview);
+    g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
+    g_signal_connect(button_up, "clicked", G_CALLBACK(on_button_up_clicked), items_treeview);
+    g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
+}
+
 GSList* run_customization_dialog(GSList *current_toolbar_items)
 {
     GtkWidget *d = create_tb_customization_dialog();
+    dialog_connect_signals(d);
 
     GtkWidget *items_treeview = lookup_widget(d, "tb_items_treeview");
-    if(!items_treeview)
-    {
-        printf("Can't obtain treeview\n");
-        gtk_widget_destroy(d);
-        return NULL;
-    }
+    assert(items_treeview != NULL);
 
     init_items_treeview(GTK_TREE_VIEW(items_treeview));
 

@@ -30,29 +30,61 @@ GtkWidget*
 create_tb_customization_dialog (void)
 {
   GtkWidget *tb_customization_dialog;
-  GtkWidget *dialog_vbox1;
+  GtkWidget *dialog_main_vbox;
+  GtkWidget *hbox1;
   GtkWidget *treeview_scrolled_window;
   GtkWidget *tb_items_treeview;
+  GtkWidget *control_buttons_hbox;
+  GtkWidget *button_add;
+  GtkWidget *button_remove;
+  GtkWidget *button_up;
+  GtkWidget *button_down;
   GtkWidget *dialog_action_area1;
   GtkWidget *cancelbutton1;
   GtkWidget *okbutton1;
 
   tb_customization_dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (tb_customization_dialog), "Customize toolbar");
+  gtk_window_set_default_size (GTK_WINDOW (tb_customization_dialog), 300, 360);
   gtk_window_set_type_hint (GTK_WINDOW (tb_customization_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_dialog_set_has_separator (GTK_DIALOG (tb_customization_dialog), FALSE);
 
-  dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (tb_customization_dialog));
-  gtk_widget_show (dialog_vbox1);
+  dialog_main_vbox = gtk_dialog_get_content_area (GTK_DIALOG (tb_customization_dialog));
+  gtk_widget_show (dialog_main_vbox);
+
+  hbox1 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_show (hbox1);
+  gtk_box_pack_start (GTK_BOX (dialog_main_vbox), hbox1, TRUE, TRUE, 0);
 
   treeview_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_show (treeview_scrolled_window);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), treeview_scrolled_window, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox1), treeview_scrolled_window, TRUE, TRUE, 0);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (treeview_scrolled_window), GTK_SHADOW_IN);
 
   tb_items_treeview = gtk_tree_view_new ();
   gtk_widget_show (tb_items_treeview);
   gtk_container_add (GTK_CONTAINER (treeview_scrolled_window), tb_items_treeview);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tb_items_treeview), FALSE);
+
+  control_buttons_hbox = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (control_buttons_hbox);
+  gtk_box_pack_start (GTK_BOX (hbox1), control_buttons_hbox, FALSE, FALSE, 0);
+
+  button_add = gtk_button_new_from_stock ("gtk-add");
+  gtk_widget_show (button_add);
+  gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_add, FALSE, FALSE, 0);
+
+  button_remove = gtk_button_new_from_stock ("gtk-remove");
+  gtk_widget_show (button_remove);
+  gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_remove, FALSE, FALSE, 0);
+
+  button_up = gtk_button_new_from_stock ("gtk-go-up");
+  gtk_widget_show (button_up);
+  gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_up, FALSE, FALSE, 0);
+
+  button_down = gtk_button_new_from_stock ("gtk-go-down");
+  gtk_widget_show (button_down);
+  gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_down, FALSE, FALSE, 0);
 
   dialog_action_area1 = gtk_dialog_get_action_area (GTK_DIALOG (tb_customization_dialog));
   gtk_widget_show (dialog_action_area1);
@@ -70,9 +102,15 @@ create_tb_customization_dialog (void)
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, tb_customization_dialog, "tb_customization_dialog");
-  GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_vbox1, "dialog_vbox1");
+  GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_main_vbox, "dialog_main_vbox");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox1, "hbox1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, treeview_scrolled_window, "treeview_scrolled_window");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, tb_items_treeview, "tb_items_treeview");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, control_buttons_hbox, "control_buttons_hbox");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_add, "button_add");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_remove, "button_remove");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_up, "button_up");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_down, "button_down");
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_action_area1, "dialog_action_area1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, cancelbutton1, "cancelbutton1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, okbutton1, "okbutton1");
