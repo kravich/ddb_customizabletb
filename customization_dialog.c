@@ -6,18 +6,20 @@
 #include "interface.h"
 #include "support.h"
 #include "toolbar_items.h"
+#include "utils.h"
 
 enum
 {
     COL_ACTION_TITLE,
     COL_ACTION_NAME,
     COL_ICON_NAME,
+    COL_ICON_PIXBUF,
     COLS_NUM
 };
 
 GtkListStore* create_items_list_store()
 {
-    GtkListStore *list = gtk_list_store_new(COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+    GtkListStore *list = gtk_list_store_new(COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
     return list;
 }
 
@@ -29,6 +31,14 @@ void fill_items_list(GtkListStore *items_list, GSList *toolbar_items)
     {
         ToolbarItem *current_item = (ToolbarItem*)(current_node->data);
 
+        GdkPixbuf *icon = NULL;
+        DB_plugin_action_t *action = find_action(current_item->action_name);
+
+        if(action != NULL)
+            icon = create_pixbuf_from_stock_icon(current_item->icon_name);
+        else
+            icon = create_pixbuf_from_stock_icon("gtk-no");
+
         GtkTreeIter row_iter;
         gtk_list_store_append(items_list, &row_iter);
 
@@ -36,7 +46,10 @@ void fill_items_list(GtkListStore *items_list, GSList *toolbar_items)
                            COL_ACTION_TITLE, current_item->action_name,
                            COL_ACTION_NAME, current_item->action_name,
                            COL_ICON_NAME, current_item->icon_name,
+                           COL_ICON_PIXBUF, icon,
                            -1);
+
+        g_object_unref(icon);
 
         current_node = g_slist_next(current_node);
     }
@@ -45,10 +58,13 @@ void fill_items_list(GtkListStore *items_list, GSList *toolbar_items)
 void init_items_treeview(GtkTreeView *items_treeview)
 {
     GtkTreeViewColumn *action_title_column = gtk_tree_view_column_new();
+    GtkCellRenderer *icon_renderer = gtk_cell_renderer_pixbuf_new();
     GtkCellRenderer *action_title_renderer = gtk_cell_renderer_text_new();
 
+    gtk_tree_view_column_pack_start(action_title_column, icon_renderer, FALSE);
     gtk_tree_view_column_pack_start(action_title_column, action_title_renderer, TRUE);
 
+    gtk_tree_view_column_add_attribute(action_title_column, icon_renderer, "pixbuf", COL_ICON_PIXBUF);
     gtk_tree_view_column_add_attribute(action_title_column, action_title_renderer, "text", COL_ACTION_TITLE);
 
     gtk_tree_view_append_column(items_treeview, action_title_column);
