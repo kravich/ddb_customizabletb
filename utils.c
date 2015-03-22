@@ -44,3 +44,40 @@ GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id)
     return pixbuf;
 }
 
+GtkWidget* create_image_by_name(const char *button_icon_name)
+{
+    GtkWidget *image = NULL;
+
+    if(button_icon_name != NULL)
+    {
+        // try to find icon name in stock items
+        GtkStockItem stock_item;
+        if(gtk_stock_lookup(button_icon_name, &stock_item))
+        {
+            image = gtk_image_new_from_stock(button_icon_name, GTK_ICON_SIZE_BUTTON);
+        }
+
+        // if previous attempt failed, treat icon name
+        // as file name and try to load it from pixmap directories
+        /*if(image == NULL)
+        {
+            char *path_to_pixmap_file = find_pixmap_file(button_icon_name);
+            if(path_to_pixmap_file != NULL)
+            {
+                image = gtk_image_new_from_file(path_to_pixmap_file);
+                g_free(path_to_pixmap_file);
+            }
+        }*/
+
+        // There is an another option - treat icon name as absolute path.
+        // Should it be allowed?
+    }
+
+    // if everything failed - create a 'missing image' icon
+    if(image == NULL)
+    {
+        image = gtk_image_new_from_stock("gtk-missing-image", GTK_ICON_SIZE_BUTTON);
+    }
+
+    return image;
+}
