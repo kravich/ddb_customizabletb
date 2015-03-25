@@ -36,6 +36,7 @@ create_tb_customization_dialog (void)
   GtkWidget *tb_items_treeview;
   GtkWidget *control_buttons_hbox;
   GtkWidget *button_add;
+  GtkWidget *button_edit;
   GtkWidget *button_remove;
   GtkWidget *button_up;
   GtkWidget *button_down;
@@ -74,6 +75,10 @@ create_tb_customization_dialog (void)
   gtk_widget_show (button_add);
   gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_add, FALSE, FALSE, 0);
 
+  button_edit = gtk_button_new_from_stock ("gtk-edit");
+  gtk_widget_show (button_edit);
+  gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_edit, FALSE, FALSE, 0);
+
   button_remove = gtk_button_new_from_stock ("gtk-remove");
   gtk_widget_show (button_remove);
   gtk_box_pack_start (GTK_BOX (control_buttons_hbox), button_remove, FALSE, FALSE, 0);
@@ -108,6 +113,7 @@ create_tb_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, tb_items_treeview, "tb_items_treeview");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, control_buttons_hbox, "control_buttons_hbox");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_add, "button_add");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_edit, "button_edit");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_remove, "button_remove");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_up, "button_up");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_down, "button_down");
