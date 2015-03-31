@@ -249,13 +249,74 @@ GSList* extract_items_from_list(GtkListStore *items_list)
 
 void on_button_add_clicked(GtkButton *button, gpointer user_data)
 {
-    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+    assert(GTK_IS_DIALOG(user_data));
 
-    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
-    if(model == NULL)
+    GtkWidget *d = GTK_WIDGET(user_data);
+
+    GtkWidget *items_treeview = lookup_widget(d, "tb_items_treeview");
+    GtkWidget *actions_treeview = lookup_widget(d, "actions_treeview");
+    GtkWidget *context_combobox = lookup_widget(d, "context_combobox");
+
+    assert(items_treeview != NULL);
+    assert(actions_treeview != NULL);
+    assert(context_combobox != NULL);
+
+    GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
+    GtkTreeModel *actions_tree_store = gtk_tree_view_get_model(GTK_TREE_VIEW(actions_treeview));
+    GtkTreeModel *context_list_store = gtk_combo_box_get_model(GTK_COMBO_BOX(context_combobox));
+
+    GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
+
+    if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
+    {
+        printf("No action is selected\n");
         return;
+    }
 
-    GtkListStore *items_list = GTK_LIST_STORE(model);
+    if(gtk_combo_box_get_active(GTK_COMBO_BOX(context_combobox)) < 0)
+    {
+        printf("No context option is selected\n");
+        return;
+    }
+
+    GtkTreeIter current_action_iter;
+    GtkTreeIter current_context_iter;
+
+    gboolean res = TRUE;
+    res = res && gtk_tree_selection_get_selected(actions_selection, &actions_tree_store, &current_action_iter);
+    res = res && gtk_combo_box_get_active_iter(GTK_COMBO_BOX(context_combobox), &current_context_iter);
+    assert(res == TRUE);
+
+    char *action_title = NULL;
+    char *action_name = NULL;
+    gtk_tree_model_get(GTK_TREE_MODEL(actions_tree_store), &current_action_iter,
+                       ACTIONS_COL_ACTION_TITLE, &action_title,
+                       ACTIONS_COL_ACTION_NAME, &action_name,
+                       -1);
+
+    if(g_str_equal(action_name, ""))
+    {
+        printf("Group entry is selected, can't add item\n");
+        g_free(action_title);
+        g_free(action_name);
+        return;
+    }
+
+    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("help-contents");
+
+    GtkTreeIter new_item_iter;
+    gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
+
+    gtk_list_store_set(GTK_LIST_STORE(items_list_store), &new_item_iter,
+                       ITEMS_COL_ACTION_TITLE, action_name,
+                       ITEMS_COL_ACTION_NAME, action_name,
+                       ITEMS_COL_ICON_NAME, "help-contents",
+                       ITEMS_COL_ICON_PIXBUF, new_item_icon,
+                       -1);
+
+    g_free(action_title);
+    g_free(action_name);
+    g_object_unref(new_item_icon);
 }
 
 void on_button_remove_clicked(GtkButton *button, gpointer user_data)
@@ -356,7 +417,7 @@ void dialog_connect_signals(GtkWidget *dialog)
     assert(button_down != NULL);
     assert(items_treeview != NULL);
 
-    g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), items_treeview);
+    g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), dialog);
     g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
     g_signal_connect(button_up, "clicked", G_CALLBACK(on_button_up_clicked), items_treeview);
     g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
