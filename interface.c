@@ -39,8 +39,13 @@ create_tb_customization_dialog (void)
   GtkWidget *tb_items_treeview;
   GtkWidget *table1;
   GtkWidget *button_remove;
-  GtkWidget *button_up;
   GtkWidget *button_down;
+  GtkWidget *button_up;
+  GtkWidget *button_change_icon;
+  GtkWidget *alignment4;
+  GtkWidget *hbox3;
+  GtkWidget *image1;
+  GtkWidget *label4;
   GtkWidget *label1;
   GtkWidget *frame2;
   GtkWidget *alignment2;
@@ -105,17 +110,39 @@ create_tb_customization_dialog (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
+  button_down = gtk_button_new_from_stock ("gtk-go-down");
+  gtk_widget_show (button_down);
+  gtk_table_attach (GTK_TABLE (table1), button_down, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
   button_up = gtk_button_new_from_stock ("gtk-go-up");
   gtk_widget_show (button_up);
   gtk_table_attach (GTK_TABLE (table1), button_up, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  button_down = gtk_button_new_from_stock ("gtk-go-down");
-  gtk_widget_show (button_down);
-  gtk_table_attach (GTK_TABLE (table1), button_down, 0, 1, 1, 2,
+  button_change_icon = gtk_button_new ();
+  gtk_widget_show (button_change_icon);
+  gtk_table_attach (GTK_TABLE (table1), button_change_icon, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  alignment4 = gtk_alignment_new (0.5, 0.5, 0, 0);
+  gtk_widget_show (alignment4);
+  gtk_container_add (GTK_CONTAINER (button_change_icon), alignment4);
+
+  hbox3 = gtk_hbox_new (FALSE, 2);
+  gtk_widget_show (hbox3);
+  gtk_container_add (GTK_CONTAINER (alignment4), hbox3);
+
+  image1 = gtk_image_new_from_stock ("gtk-edit", GTK_ICON_SIZE_BUTTON);
+  gtk_widget_show (image1);
+  gtk_box_pack_start (GTK_BOX (hbox3), image1, FALSE, FALSE, 0);
+
+  label4 = gtk_label_new_with_mnemonic ("Change Icon");
+  gtk_widget_show (label4);
+  gtk_box_pack_start (GTK_BOX (hbox3), label4, FALSE, FALSE, 0);
 
   label1 = gtk_label_new ("Current toolbar actions");
   gtk_widget_show (label1);
@@ -200,8 +227,13 @@ create_tb_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, tb_items_treeview, "tb_items_treeview");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, table1, "table1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_remove, "button_remove");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_up, "button_up");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_down, "button_down");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_up, "button_up");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_change_icon, "button_change_icon");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment4, "alignment4");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox3, "hbox3");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, image1, "image1");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label4, "label4");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, label1, "label1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, frame2, "frame2");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment2, "alignment2");
