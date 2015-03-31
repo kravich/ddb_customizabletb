@@ -3,30 +3,42 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <glib.h>
+
 #include "interface.h"
 #include "support.h"
 #include "toolbar_items.h"
 #include "utils.h"
 
+extern DB_functions_t *deadbeef;
+
 enum
 {
-    COL_ACTION_TITLE,
-    COL_ACTION_NAME,
-    COL_ICON_NAME,
-    COL_ICON_PIXBUF,
-    COLS_NUM
+    ITEMS_COL_ACTION_TITLE,
+    ITEMS_COL_ACTION_NAME,
+    ITEMS_COL_ICON_NAME,
+    ITEMS_COL_ICON_PIXBUF,
+    ITEMS_COLS_NUM
 };
 
-GtkListStore* create_items_list_store()
+enum
 {
-    GtkListStore *list = gtk_list_store_new(COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
-    return list;
-}
+    ACTIONS_COL_ACTION_TITLE,
+    ACTIONS_COL_ACTION_NAME,
+    ACTIONS_COLS_NUM
+};
 
-void fill_items_list(GtkListStore *items_list, GSList *toolbar_items)
+enum
 {
+    CONTEXT_COL_NAME,
+    CONTEXT_COL_ID
+};
+
+GtkListStore* create_items_list_store(GSList *toolbar_items)
+{
+    GtkListStore *items_list = gtk_list_store_new(ITEMS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+
     GSList *current_node = toolbar_items;
-
     while(current_node != NULL)
     {
         ToolbarItem *current_item = (ToolbarItem*)(current_node->data);
@@ -43,16 +55,104 @@ void fill_items_list(GtkListStore *items_list, GSList *toolbar_items)
         gtk_list_store_append(items_list, &row_iter);
 
         gtk_list_store_set(items_list, &row_iter,
-                           COL_ACTION_TITLE, current_item->action_name,
-                           COL_ACTION_NAME, current_item->action_name,
-                           COL_ICON_NAME, current_item->icon_name,
-                           COL_ICON_PIXBUF, icon,
+                           ITEMS_COL_ACTION_TITLE, current_item->action_name,
+                           ITEMS_COL_ACTION_NAME, current_item->action_name,
+                           ITEMS_COL_ICON_NAME, current_item->icon_name,
+                           ITEMS_COL_ICON_PIXBUF, icon,
                            -1);
 
         g_object_unref(icon);
 
         current_node = g_slist_next(current_node);
     }
+
+    return items_list;
+}
+
+gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, char *required_group_name, GtkTreeIter *iter)
+{
+    gboolean iter_found = FALSE;
+
+    gboolean res = gtk_tree_model_get_iter_first(tree_model, iter);
+    while(res)
+    {
+        char *group_name = NULL;
+
+        gtk_tree_model_get(tree_model, iter, 0, &group_name, -1);
+
+        if(g_str_equal(group_name, required_group_name))
+        {
+            g_free(group_name);
+            iter_found = TRUE;
+            break;
+        }
+
+        g_free(group_name);
+
+        res = gtk_tree_model_iter_next(tree_model, iter);
+    }
+
+    return iter_found;
+}
+
+GtkTreeStore* create_actions_tree_store()
+{
+    GtkTreeStore *actions_tree_store = gtk_tree_store_new(ACTIONS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING);
+
+    DB_plugin_t **plugins = deadbeef->plug_get_list();
+
+    for(int plug_i = 0; plugins[plug_i] != NULL; plug_i++)
+    {
+        DB_plugin_t *curr_plugin = plugins[plug_i];
+
+        if(curr_plugin->get_actions == NULL)
+            continue;
+
+        DB_plugin_action_t *actions = curr_plugin->get_actions(NULL);
+        DB_plugin_action_t *curr_action = actions;
+        while(curr_action != NULL)
+        {
+            char **name_parts = g_strsplit(curr_action->title, "/", 2);
+
+            if(name_parts[0] == NULL || name_parts[1] == NULL)
+            {
+                printf("Warning: action %s does not have group specified in name\n", curr_action->title);
+                curr_action = curr_action->next;
+                g_strfreev(name_parts);
+                continue;
+            }
+
+            char *group_name = name_parts[0];
+            char *action_title = name_parts[1];
+
+            GtkTreeIter group_iter, action_iter;
+
+            gboolean group_entry_exist = actions_tree_find_group_entry(GTK_TREE_MODEL(actions_tree_store),
+                                                                       group_name,
+                                                                       &group_iter);
+
+            if(!group_entry_exist)
+            {
+                gtk_tree_store_append(actions_tree_store, &group_iter, NULL);
+                gtk_tree_store_set(actions_tree_store, &group_iter,
+                                   ACTIONS_COL_ACTION_TITLE, group_name,
+                                   ACTIONS_COL_ACTION_NAME, "",
+                                   -1);
+            }
+
+            gtk_tree_store_append(actions_tree_store, &action_iter, &group_iter);
+            gtk_tree_store_set(actions_tree_store, &action_iter,
+                               ACTIONS_COL_ACTION_TITLE, action_title,
+                               ACTIONS_COL_ACTION_NAME, curr_action->name,
+                               -1);
+
+            g_strfreev(name_parts);
+
+            curr_action = curr_action->next;
+        }
+    }
+
+    return actions_tree_store;
 }
 
 void init_items_treeview(GtkTreeView *items_treeview)
@@ -64,10 +164,58 @@ void init_items_treeview(GtkTreeView *items_treeview)
     gtk_tree_view_column_pack_start(action_title_column, icon_renderer, FALSE);
     gtk_tree_view_column_pack_start(action_title_column, action_title_renderer, TRUE);
 
-    gtk_tree_view_column_add_attribute(action_title_column, icon_renderer, "pixbuf", COL_ICON_PIXBUF);
-    gtk_tree_view_column_add_attribute(action_title_column, action_title_renderer, "text", COL_ACTION_TITLE);
+    gtk_tree_view_column_add_attribute(action_title_column, icon_renderer, "pixbuf", ITEMS_COL_ICON_PIXBUF);
+    gtk_tree_view_column_add_attribute(action_title_column, action_title_renderer, "text", ITEMS_COL_ACTION_TITLE);
 
     gtk_tree_view_append_column(items_treeview, action_title_column);
+}
+
+void init_actions_treeview(GtkTreeView *actions_tree_view)
+{
+    GtkTreeViewColumn *action_name_column = gtk_tree_view_column_new();
+    GtkCellRenderer *action_name_renderer = gtk_cell_renderer_text_new();
+
+    gtk_tree_view_column_pack_end(action_name_column, action_name_renderer, TRUE);
+
+    gtk_tree_view_column_add_attribute(action_name_column, action_name_renderer, "text", ACTIONS_COL_ACTION_TITLE);
+
+    gtk_tree_view_append_column(actions_tree_view, action_name_column);
+}
+
+void init_context_combobox(GtkComboBox *context_combobox)
+{
+    GtkListStore *context_list_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
+
+    GtkTreeIter iter;
+
+    gtk_list_store_append(context_list_store, &iter);
+    gtk_list_store_set(context_list_store, &iter,
+                       CONTEXT_COL_NAME, "Main",
+                       CONTEXT_COL_ID, DDB_ACTION_CTX_MAIN,
+                       -1);
+
+    gtk_list_store_append(context_list_store, &iter);
+    gtk_list_store_set(context_list_store, &iter,
+                       CONTEXT_COL_NAME, "Selection",
+                       CONTEXT_COL_ID, DDB_ACTION_CTX_SELECTION,
+                       -1);
+
+    gtk_list_store_append(context_list_store, &iter);
+    gtk_list_store_set(context_list_store, &iter,
+                       CONTEXT_COL_NAME, "Playlist",
+                       CONTEXT_COL_ID, DDB_ACTION_CTX_PLAYLIST,
+                       -1);
+
+    gtk_list_store_append(context_list_store, &iter);
+    gtk_list_store_set(context_list_store, &iter,
+                       CONTEXT_COL_NAME, "Nowplaying",
+                       CONTEXT_COL_ID, DDB_ACTION_CTX_NOWPLAYING,
+                       -1);
+
+    gtk_combo_box_set_model(context_combobox, GTK_TREE_MODEL(context_list_store));
+    g_object_unref(context_list_store);
+
+    gtk_combo_box_set_active(context_combobox, 0);
 }
 
 GSList* extract_items_from_list(GtkListStore *items_list)
@@ -83,8 +231,8 @@ GSList* extract_items_from_list(GtkListStore *items_list)
         char *icon_name = NULL;
 
         gtk_tree_model_get(GTK_TREE_MODEL(items_list), &row_iter,
-                           COL_ACTION_NAME, &action_name,
-                           COL_ICON_NAME, &icon_name,
+                           ITEMS_COL_ACTION_NAME, &action_name,
+                           ITEMS_COL_ICON_NAME, &icon_name,
                            -1);
 
         ToolbarItem *item = (ToolbarItem*)malloc(sizeof(ToolbarItem));
@@ -214,20 +362,35 @@ void dialog_connect_signals(GtkWidget *dialog)
     g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
 }
 
+void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
+{
+    GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
+    GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
+    GtkWidget *context_combobox = lookup_widget(dialog, "context_combobox");
+
+    assert(items_treeview != NULL);
+    assert(actions_treeview != NULL);
+    assert(context_combobox != NULL);
+
+    init_items_treeview(GTK_TREE_VIEW(items_treeview));
+    gtk_tree_view_set_model(GTK_TREE_VIEW(items_treeview), GTK_TREE_MODEL(items_list_store));
+
+    init_actions_treeview(GTK_TREE_VIEW(actions_treeview));
+    gtk_tree_view_set_model(GTK_TREE_VIEW(actions_treeview), GTK_TREE_MODEL(actions_tree_store));
+
+    init_context_combobox(GTK_COMBO_BOX(context_combobox));
+
+    dialog_connect_signals(dialog);
+}
+
 GSList* run_customization_dialog(GSList *current_toolbar_items)
 {
     GtkWidget *d = create_tb_customization_dialog();
-    dialog_connect_signals(d);
 
-    GtkWidget *items_treeview = lookup_widget(d, "tb_items_treeview");
-    assert(items_treeview != NULL);
+    GtkListStore *items_list_store = create_items_list_store(current_toolbar_items);
+    GtkTreeStore *actions_tree_store = create_actions_tree_store();
 
-    init_items_treeview(GTK_TREE_VIEW(items_treeview));
-
-    GtkListStore *items_list = create_items_list_store();
-    fill_items_list(items_list, current_toolbar_items);
-
-    gtk_tree_view_set_model(GTK_TREE_VIEW(items_treeview), GTK_TREE_MODEL(items_list));
+    dialog_init(d, items_list_store, actions_tree_store);
 
     gint dialog_response = gtk_dialog_run(GTK_DIALOG(d));
     gtk_widget_destroy(d);
@@ -236,10 +399,11 @@ GSList* run_customization_dialog(GSList *current_toolbar_items)
 
     if(dialog_response == GTK_RESPONSE_OK)
     {
-        new_toolbar_items = extract_items_from_list(items_list);
+        new_toolbar_items = extract_items_from_list(items_list_store);
     }
 
-    g_object_unref(items_list);
+    g_object_unref(actions_tree_store);
+    g_object_unref(items_list_store);
 
     return new_toolbar_items;
 }

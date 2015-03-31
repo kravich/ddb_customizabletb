@@ -49,6 +49,7 @@ create_tb_customization_dialog (void)
   GtkWidget *actions_treeview;
   GtkWidget *vbox3;
   GtkWidget *hbox2;
+  GtkWidget *label3;
   GtkWidget *context_combobox;
   GtkWidget *button_add;
   GtkWidget *alignment3;
@@ -149,9 +150,13 @@ create_tb_customization_dialog (void)
   gtk_widget_show (vbox3);
   gtk_box_pack_start (GTK_BOX (vbox2), vbox3, FALSE, FALSE, 2);
 
-  hbox2 = gtk_hbox_new (FALSE, 0);
+  hbox2 = gtk_hbox_new (FALSE, 4);
   gtk_widget_show (hbox2);
   gtk_box_pack_start (GTK_BOX (vbox3), hbox2, TRUE, TRUE, 0);
+
+  label3 = gtk_label_new ("Context:");
+  gtk_widget_show (label3);
+  gtk_box_pack_start (GTK_BOX (hbox2), label3, FALSE, FALSE, 0);
 
   context_combobox = gtk_combo_box_text_new ();
   gtk_widget_show (context_combobox);
@@ -205,6 +210,7 @@ create_tb_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, actions_treeview, "actions_treeview");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, vbox3, "vbox3");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox2, "hbox2");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label3, "label3");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, context_combobox, "context_combobox");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_add, "button_add");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment3, "alignment3");
