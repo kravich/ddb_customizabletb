@@ -302,7 +302,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
-    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("help-contents");
+    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("gtk-missing-image");
 
     GtkTreeIter new_item_iter;
     gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
@@ -310,7 +310,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_set(GTK_LIST_STORE(items_list_store), &new_item_iter,
                        ITEMS_COL_ACTION_TITLE, action_name,
                        ITEMS_COL_ACTION_NAME, action_name,
-                       ITEMS_COL_ICON_NAME, "help-contents",
+                       ITEMS_COL_ICON_NAME, "gtk-missing-image",
                        ITEMS_COL_ICON_PIXBUF, new_item_icon,
                        -1);
 
