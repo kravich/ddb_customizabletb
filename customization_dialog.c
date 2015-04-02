@@ -115,33 +115,46 @@ GtkTreeStore* create_actions_tree_store()
         {
             char **name_parts = g_strsplit(curr_action->title, "/", 2);
 
-            if(name_parts[0] == NULL || name_parts[1] == NULL)
+            char *group_name = NULL;
+            char *action_title = NULL;
+
+            if(name_parts[1] != NULL)   // action title haves group specified in name
             {
-                printf("Warning: action %s does not have group specified in name\n", curr_action->title);
-                curr_action = curr_action->next;
-                g_strfreev(name_parts);
-                continue;
+                group_name = name_parts[0];
+                action_title = name_parts[1];
+            }
+            else
+            {
+                action_title = name_parts[0];
             }
 
-            char *group_name = name_parts[0];
-            char *action_title = name_parts[1];
+            GtkTreeIter action_iter;
 
-            GtkTreeIter group_iter, action_iter;
-
-            gboolean group_entry_exist = actions_tree_find_group_entry(GTK_TREE_MODEL(actions_tree_store),
-                                                                       group_name,
-                                                                       &group_iter);
-
-            if(!group_entry_exist)
+            if(group_name != NULL)
             {
-                gtk_tree_store_append(actions_tree_store, &group_iter, NULL);
-                gtk_tree_store_set(actions_tree_store, &group_iter,
-                                   ACTIONS_COL_ACTION_TITLE, group_name,
-                                   ACTIONS_COL_ACTION_NAME, "",
-                                   -1);
+                GtkTreeIter group_iter;
+
+                gboolean group_entry_exist = actions_tree_find_group_entry(GTK_TREE_MODEL(actions_tree_store),
+                                                                           group_name,
+                                                                           &group_iter);
+
+                if(!group_entry_exist)
+                {
+                    gtk_tree_store_append(actions_tree_store, &group_iter, NULL);
+                    gtk_tree_store_set(actions_tree_store, &group_iter,
+                                       ACTIONS_COL_ACTION_TITLE, group_name,
+                                       ACTIONS_COL_ACTION_NAME, "",
+                                       -1);
+                }
+
+                gtk_tree_store_append(actions_tree_store, &action_iter, &group_iter);
+            }
+            else
+            {
+                gtk_tree_store_append(actions_tree_store, &action_iter, NULL);
             }
 
-            gtk_tree_store_append(actions_tree_store, &action_iter, &group_iter);
+
             gtk_tree_store_set(actions_tree_store, &action_iter,
                                ACTIONS_COL_ACTION_TITLE, action_title,
                                ACTIONS_COL_ACTION_NAME, curr_action->name,
