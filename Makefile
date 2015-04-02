@@ -20,7 +20,8 @@ interface.c interface.h \
 callbacks.c callbacks.h \
 support.c support.h \
 customization_dialog.c customization_dialog.h \
-utils.c utils.h
+utils.c utils.h \
+icon_selection_dialog.c icon_selection_dialog.h
 
 SOURCES = $(filter %.c, $(INPUT_FILES))
 HEADERS = $(filter %.h, $(INPUT_FILES))

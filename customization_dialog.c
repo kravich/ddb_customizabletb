@@ -9,6 +9,7 @@
 #include "support.h"
 #include "toolbar_items.h"
 #include "utils.h"
+#include "icon_selection_dialog.h"
 
 extern DB_functions_t *deadbeef;
 
@@ -47,9 +48,9 @@ GtkListStore* create_items_list_store(GSList *toolbar_items)
         DB_plugin_action_t *action = find_action(current_item->action_name);
 
         if(action != NULL)
-            icon = create_pixbuf_from_stock_icon(current_item->icon_name);
+            icon = create_pixbuf_from_stock_icon(current_item->icon_name, GTK_ICON_SIZE_BUTTON);
         else
-            icon = create_pixbuf_from_stock_icon("gtk-no");
+            icon = create_pixbuf_from_stock_icon("gtk-no", GTK_ICON_SIZE_BUTTON);
 
         GtkTreeIter row_iter;
         gtk_list_store_append(items_list, &row_iter);
@@ -302,7 +303,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
-    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("gtk-missing-image");
+    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("gtk-missing-image", GTK_ICON_SIZE_BUTTON);
 
     GtkTreeIter new_item_iter;
     gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
@@ -403,24 +404,62 @@ void on_button_down_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_swap(items_list, &selected_iter, &next_row_iter);
 }
 
+void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
+    GtkTreeModel *items_list_store = gtk_tree_view_get_model(items_treeview);
+
+    GtkTreeSelection *items_selection = gtk_tree_view_get_selection(items_treeview);
+
+    if(gtk_tree_selection_count_selected_rows(items_selection) != 1)
+        return;
+
+    GtkTreeIter selected_item_iter;
+    gtk_tree_selection_get_selected(items_selection, &items_list_store, &selected_item_iter);
+
+    char *icon_name = NULL;
+    gtk_tree_model_get(items_list_store, &selected_item_iter,
+                       ITEMS_COL_ICON_NAME, &icon_name,
+                       -1);
+
+    char *new_icon_name = run_icon_selection_dialog(icon_name);
+    g_free(icon_name);
+
+    if(new_icon_name != NULL)
+    {
+        GdkPixbuf *new_icon_pixbuf = create_pixbuf_from_stock_icon(new_icon_name, GTK_ICON_SIZE_BUTTON);
+
+        gtk_list_store_set(GTK_LIST_STORE(items_list_store), &selected_item_iter,
+                           ITEMS_COL_ICON_PIXBUF, new_icon_pixbuf,
+                           ITEMS_COL_ICON_NAME, new_icon_name,
+                           -1);
+
+        g_object_unref(new_icon_pixbuf);
+        g_free(new_icon_name);
+    }
+}
+
 void dialog_connect_signals(GtkWidget *dialog)
 {
     GtkWidget *button_add = lookup_widget(dialog, "button_add");
     GtkWidget *button_remove = lookup_widget(dialog, "button_remove");
     GtkWidget *button_up = lookup_widget(dialog, "button_up");
     GtkWidget *button_down = lookup_widget(dialog, "button_down");
+    GtkWidget *button_change_icon = lookup_widget(dialog, "button_change_icon");
     GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
 
     assert(button_add != NULL);
     assert(button_remove != NULL);
     assert(button_up != NULL);
     assert(button_down != NULL);
+    assert(button_change_icon != NULL);
     assert(items_treeview != NULL);
 
     g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), dialog);
     g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
     g_signal_connect(button_up, "clicked", G_CALLBACK(on_button_up_clicked), items_treeview);
     g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
+    g_signal_connect(button_change_icon, "clicked", G_CALLBACK(on_button_change_icon_clicked), items_treeview);
 }
 
 void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)

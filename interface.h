@@ -3,3 +3,4 @@
  */
 
 GtkWidget* create_tb_customization_dialog (void);
+GtkWidget* create_icon_selection_dialog (void);

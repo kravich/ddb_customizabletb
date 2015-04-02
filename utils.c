@@ -30,7 +30,7 @@ DB_plugin_action_t* find_action(char *action_name)
     return NULL;
 }
 
-GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id)
+GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id, GtkIconSize icon_size)
 {
     GtkStockItem stock_item;
     if(!gtk_stock_lookup(stock_id, &stock_item))
@@ -39,7 +39,7 @@ GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id)
     GtkWidget *image = gtk_image_new();
     g_object_ref_sink(image);
 
-    GdkPixbuf *pixbuf = gtk_widget_render_icon(image, stock_id, GTK_ICON_SIZE_BUTTON, NULL);
+    GdkPixbuf *pixbuf = gtk_widget_render_icon(image, stock_id, icon_size, NULL);
 
     g_object_unref(image);
 
