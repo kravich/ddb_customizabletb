@@ -19,11 +19,14 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
         char *fmt = NULL;
 
         if(current_item->next != NULL)
-            fmt = "%s|%s,";
+            fmt = "%s|%d|%s,";
         else
-            fmt = "%s|%s";
+            fmt = "%s|%d|%s";
 
-        char *item_str = g_strdup_printf(fmt, current_item->action_name, current_item->icon_name);
+        char *item_str = g_strdup_printf(fmt,
+                                         current_item->action_name,
+                                         current_item->action_context,
+                                         current_item->icon_name);
 
         size_t chars_to_add = strlen(item_str);
 
@@ -49,11 +52,11 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
     char **current_element = elements;
     while(*current_element != NULL)
     {
-        ToolbarItem *item = malloc(sizeof(ToolbarItem));
+        ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
 
-        char **parts = g_strsplit(*current_element, "|", 2);
+        char **parts = g_strsplit(*current_element, "|", 3);
 
-        if(parts[0] == NULL || parts[1] == NULL || item == NULL)
+        if(parts[0] == NULL || parts[1] == NULL || parts[2] == NULL || item == NULL)
         {
             g_strfreev(parts);
             g_strfreev(elements);
@@ -61,10 +64,14 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
             return NULL;
         }
 
-        item->action_name = g_strdup(parts[0]); // TODO: should we check the return value of g_strdup()?
-        item->icon_name = g_strdup(parts[1]);
-        item->action = find_action(item->action_name);
-        item->action_context = DDB_ACTION_CTX_MAIN;
+        char *action_name = parts[0];
+        char* action_context = parts[1];
+        char *icon_name = parts[2];
+
+        item->action_name = g_strdup(action_name); // TODO: should we check the return value of g_strdup()?
+        item->icon_name = g_strdup(icon_name);
+        item->action = find_action(action_name);
+        item->action_context = atoi(action_context); // TODO: add check
         item->next = NULL;
 
         g_strfreev(parts);
