@@ -16,11 +16,11 @@ INPUT_FILES = \
 ddb_customizabletb.c \
 w_toolbar.c w_toolbar.h \
 toolbar_items.c toolbar_items.h \
+utils.c utils.h \
 interface.c interface.h \
 callbacks.c callbacks.h \
 support.c support.h \
 customization_dialog.c customization_dialog.h \
-utils.c utils.h \
 icon_selection_dialog.c icon_selection_dialog.h
 
 SOURCES = $(filter %.c, $(INPUT_FILES))

@@ -21,7 +21,7 @@ void w_toolbar_destroy(ddb_gtkui_widget_t *w);
 typedef struct
 {
     ddb_gtkui_widget_t base;
-    GSList *items_list;
+    ToolbarItem *items_list;
 } w_toolbar_t;
 
 ddb_gtkui_widget_t* w_toolbar_create()
@@ -115,7 +115,7 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
     char layout_str[256];
     extract_layout_param(params, layout_str, 256);
 
-    GSList *saved_toolbar_items = toolbar_items_deserialize(layout_str);
+    ToolbarItem *saved_toolbar_items = toolbar_items_deserialize(layout_str);
 
     if(saved_toolbar_items != NULL)
     {
@@ -140,8 +140,14 @@ void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 
 void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 {
-    DB_plugin_action_t *action = (DB_plugin_action_t*)user_data;
-    printf("Activate action\n");
+    ToolbarItem *item = (ToolbarItem*)user_data;
+
+    assert(item->action != NULL);
+
+    printf("Activating \"%s\" in context %d\n", item->action_name, item->action_context);
+
+    if(item->action->callback2)
+        item->action->callback2(item->action, item->action_context);
 }
 
 void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
@@ -153,11 +159,9 @@ void fill_toolbar(w_toolbar_t *toolbar)
 {
     GtkBox *hbox = GTK_BOX(toolbar->base.widget);
 
-    GSList *current_node = toolbar->items_list;
-    while(current_node != NULL)
+    ToolbarItem *current_item = toolbar->items_list;
+    while(current_item != NULL)
     {
-        ToolbarItem *current_item = (ToolbarItem*)(current_node->data);
-
         GtkWidget *button = gtk_button_new();
         gtk_widget_set_can_focus(button, FALSE);
         gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
@@ -165,13 +169,11 @@ void fill_toolbar(w_toolbar_t *toolbar)
 
         gtk_box_pack_start(hbox, button, FALSE, FALSE, 0);
 
-        DB_plugin_action_t *action = find_action(current_item->action_name);
-
         GtkWidget *image = NULL;
-        if(action != NULL)
+        if(current_item->action != NULL)
         {
             image = create_image_by_name(current_item->icon_name);
-            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), action);
+            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
         }
         else
         {
@@ -182,7 +184,7 @@ void fill_toolbar(w_toolbar_t *toolbar)
         gtk_widget_show(image);
         gtk_container_add(GTK_CONTAINER(button), image);
 
-        current_node = g_slist_next(current_node);
+        current_item = current_item->next;
     }
 
     // this is required since deadbeef sets size_request explicitly
@@ -209,7 +211,7 @@ void empty_hbox(GtkBox *hbox)
     g_list_free(list);
 }
 
-void w_toolbar_set_new_items(w_toolbar_t *toolbar, GSList *new_toolbar_items)
+void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
 {
     printf("Updating toolbar items\n");
 
@@ -228,7 +230,7 @@ void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
 
-    GSList *new_toolbar_items = run_customization_dialog(toolbar->items_list);
+    ToolbarItem *new_toolbar_items = run_customization_dialog(toolbar->items_list);
     if(new_toolbar_items != NULL)
         w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }

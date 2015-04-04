@@ -4,21 +4,21 @@
 #include <string.h>
 #include <stdlib.h>
 
-void toolbar_items_serialize(GSList *toolbar_items, char *buff, size_t buff_size)
+#include "utils.h"
+
+void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff_size)
 {
     assert(buff_size != 0);
 
     size_t buff_free_space = buff_size - 1;
     buff[0] = '\0';
 
-    GSList *current_node = toolbar_items;
-    while(current_node != NULL)
+    ToolbarItem *current_item = toolbar_items;
+    while(current_item != NULL)
     {
-        ToolbarItem *current_item = (ToolbarItem*)current_node->data;
-
         char *fmt = NULL;
 
-        if(current_node->next != NULL)
+        if(current_item->next != NULL)
             fmt = "%s|%s,";
         else
             fmt = "%s|%s";
@@ -36,15 +36,16 @@ void toolbar_items_serialize(GSList *toolbar_items, char *buff, size_t buff_size
         else
             break;
 
-        current_node = g_slist_next(current_node);
+        current_item = current_item->next;
     }
 }
 
-GSList* toolbar_items_deserialize(char *layout)
+ToolbarItem* toolbar_items_deserialize(char *layout)
 {
     char **elements = g_strsplit(layout, ",", -1);
 
-    GSList *toolbar_items = NULL;
+    ToolbarItem *toolbar_items = NULL;
+
     char **current_element = elements;
     while(*current_element != NULL)
     {
@@ -62,66 +63,104 @@ GSList* toolbar_items_deserialize(char *layout)
 
         item->action_name = g_strdup(parts[0]); // TODO: should we check the return value of g_strdup()?
         item->icon_name = g_strdup(parts[1]);
+        item->action = find_action(item->action_name);
+        item->action_context = DDB_ACTION_CTX_MAIN;
+        item->next = NULL;
 
-        toolbar_items = g_slist_append(toolbar_items, item);
+        g_strfreev(parts);
+
+        toolbar_items = toolbar_items_append(toolbar_items, item);
 
         current_element++;
     }
 
+    g_strfreev(elements);
+
     return toolbar_items;
 }
 
-GSList* create_default_toolbar_items()
+ToolbarItem* create_default_toolbar_items()
 {
-    GSList *toolbar_items = NULL;
+    ToolbarItem *toolbar_items = NULL;
     ToolbarItem *item = NULL;
 
     // TODO: add check for malloc() return value
 
-    item = malloc(sizeof(ToolbarItem));
+    item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("stop");
     item->icon_name = g_strdup("gtk-media-stop");
+    item->action = find_action(item->action_name);
+    item->action_context = DDB_ACTION_CTX_MAIN;
+    item->next = NULL;
 
-    toolbar_items = g_slist_append(toolbar_items, item);
+    toolbar_items = toolbar_items_append(toolbar_items, item);
 
-    item = malloc(sizeof(ToolbarItem));
+    item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("play");
     item->icon_name = g_strdup("gtk-media-play");
+    item->action = find_action(item->action_name);
+    item->action_context = DDB_ACTION_CTX_MAIN;
+    item->next = NULL;
 
-    toolbar_items = g_slist_append(toolbar_items, item);
+    toolbar_items = toolbar_items_append(toolbar_items, item);
 
-    item = malloc(sizeof(ToolbarItem));
+    item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("toggle_pause");
     item->icon_name = g_strdup("gtk-media-pause");
+    item->action = find_action(item->action_name);
+    item->action_context = DDB_ACTION_CTX_MAIN;
+    item->next = NULL;
 
-    toolbar_items = g_slist_append(toolbar_items, item);
+    toolbar_items = toolbar_items_append(toolbar_items, item);
 
-    item = malloc(sizeof(ToolbarItem));
+    item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("prev");
     item->icon_name = g_strdup("gtk-media-previous");
+    item->action = find_action(item->action_name);
+    item->action_context = DDB_ACTION_CTX_MAIN;
+    item->next = NULL;
 
-    toolbar_items = g_slist_append(toolbar_items, item);
+    toolbar_items = toolbar_items_append(toolbar_items, item);
 
-    item = malloc(sizeof(ToolbarItem));
+    item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("next");
     item->icon_name = g_strdup("gtk-media-next");
+    item->action = find_action(item->action_name);
+    item->action_context = DDB_ACTION_CTX_MAIN;
+    item->next = NULL;
 
-    toolbar_items = g_slist_append(toolbar_items, item);
+    toolbar_items = toolbar_items_append(toolbar_items, item);
 
     return toolbar_items;
 }
 
-void free_item_data_cb(gpointer data)
+void free_items_list(ToolbarItem *items_list)
 {
-    ToolbarItem *item = (ToolbarItem*)data;
-    assert(item != NULL);
+    ToolbarItem *current_item = items_list;
+    while(current_item != NULL)
+    {
+        ToolbarItem *next_item = current_item->next;
 
-    g_free(item->action_name);
-    g_free(item->icon_name);
-    g_free(item);
+        g_free(current_item->action_name);
+        g_free(current_item->icon_name);
+        g_free(current_item);
+
+        current_item = next_item;
+    }
 }
 
-void free_items_list(GSList *items_list)
+ToolbarItem* toolbar_items_append(ToolbarItem* items, ToolbarItem *new_item)
 {
-    g_slist_free_full(items_list, free_item_data_cb);
+    if(items == NULL)
+    {
+        return new_item;
+    }
+
+    ToolbarItem *last_item = items;
+    while(last_item->next != NULL)
+        last_item = last_item->next;
+
+    last_item->next = new_item;
+
+    return items;
 }

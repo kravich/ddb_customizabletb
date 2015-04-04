@@ -35,19 +35,16 @@ enum
     CONTEXT_COL_ID
 };
 
-GtkListStore* create_items_list_store(GSList *toolbar_items)
+GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
 {
     GtkListStore *items_list = gtk_list_store_new(ITEMS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 
-    GSList *current_node = toolbar_items;
-    while(current_node != NULL)
+    ToolbarItem *current_item = toolbar_items;
+    while(current_item != NULL)
     {
-        ToolbarItem *current_item = (ToolbarItem*)(current_node->data);
-
         GdkPixbuf *icon = NULL;
-        DB_plugin_action_t *action = find_action(current_item->action_name);
 
-        if(action != NULL)
+        if(current_item->action != NULL)
             icon = create_pixbuf_from_stock_icon(current_item->icon_name, GTK_ICON_SIZE_BUTTON);
         else
             icon = create_pixbuf_from_stock_icon("gtk-no", GTK_ICON_SIZE_BUTTON);
@@ -64,7 +61,7 @@ GtkListStore* create_items_list_store(GSList *toolbar_items)
 
         g_object_unref(icon);
 
-        current_node = g_slist_next(current_node);
+        current_item = current_item->next;
     }
 
     return items_list;
@@ -232,10 +229,10 @@ void init_context_combobox(GtkComboBox *context_combobox)
     gtk_combo_box_set_active(context_combobox, 0);
 }
 
-GSList* extract_items_from_list(GtkListStore *items_list)
+ToolbarItem* extract_items_from_list(GtkListStore *items_list)
 {
     GtkTreeIter row_iter;
-    GSList *new_items = NULL;
+    ToolbarItem *new_items = NULL;
 
     gboolean res = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(items_list), &row_iter);
 
@@ -252,8 +249,11 @@ GSList* extract_items_from_list(GtkListStore *items_list)
         ToolbarItem *item = (ToolbarItem*)malloc(sizeof(ToolbarItem));
         item->action_name = action_name;
         item->icon_name = icon_name;
+        item->action = find_action(action_name);
+        item->action_context = DDB_ACTION_CTX_MAIN;
+        item->next = NULL;
 
-        new_items = g_slist_append(new_items, item);
+        new_items = toolbar_items_append(new_items, item);
 
         res = gtk_tree_model_iter_next(GTK_TREE_MODEL(items_list), &row_iter);
     }
@@ -496,7 +496,7 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
     dialog_connect_signals(dialog);
 }
 
-GSList* run_customization_dialog(GSList *current_toolbar_items)
+ToolbarItem* run_customization_dialog(ToolbarItem *current_toolbar_items)
 {
     GtkWidget *d = create_tb_customization_dialog();
 
@@ -508,7 +508,7 @@ GSList* run_customization_dialog(GSList *current_toolbar_items)
     gint dialog_response = gtk_dialog_run(GTK_DIALOG(d));
     gtk_widget_destroy(d);
 
-    GSList *new_toolbar_items = NULL;
+    ToolbarItem *new_toolbar_items = NULL;
 
     if(dialog_response == GTK_RESPONSE_OK)
     {

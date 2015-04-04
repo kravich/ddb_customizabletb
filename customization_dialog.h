@@ -2,7 +2,8 @@
 #define CUSTOMIZATION_DIALOG_H
 
 #include <glib.h>
+#include "toolbar_items.h"
 
-GSList* run_customization_dialog(GSList *current_toolbar_items);
+ToolbarItem* run_customization_dialog(ToolbarItem *current_toolbar_items);
 
 #endif
