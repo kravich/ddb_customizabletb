@@ -15,10 +15,12 @@ extern DB_functions_t *deadbeef;
 
 enum
 {
-    ITEMS_COL_ACTION_TITLE,
-    ITEMS_COL_ACTION_NAME,
-    ITEMS_COL_ICON_NAME,
     ITEMS_COL_ICON_PIXBUF,
+    ITEMS_COL_ACTION_TITLE,
+    ITEMS_COL_ACTION_CTX_NAME,
+    ITEMS_COL_ACTION_NAME,
+    ITEMS_COL_ACTION_CTX_ID,
+    ITEMS_COL_ICON_NAME,
     ITEMS_COLS_NUM
 };
 
@@ -35,9 +37,30 @@ enum
     CONTEXT_COL_ID
 };
 
+const char* get_context_name_by_id(int context)
+{
+    assert(context >= 0 && context < DDB_ACTION_CTX_COUNT);
+
+    char *context_names[] =
+    {
+        [DDB_ACTION_CTX_MAIN] = "Main context",
+        [DDB_ACTION_CTX_NOWPLAYING] = "Nowplaying context",
+        [DDB_ACTION_CTX_PLAYLIST] = "Playlist context",
+        [DDB_ACTION_CTX_SELECTION] = "Selection context"
+    };
+
+    return context_names[context];
+}
+
 GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
 {
-    GtkListStore *items_list = gtk_list_store_new(ITEMS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+    GtkListStore *items_list = gtk_list_store_new(ITEMS_COLS_NUM,
+                                                  GDK_TYPE_PIXBUF,
+                                                  G_TYPE_STRING,
+                                                  G_TYPE_STRING,
+                                                  G_TYPE_STRING,
+                                                  G_TYPE_INT,
+                                                  G_TYPE_STRING);
 
     ToolbarItem *current_item = toolbar_items;
     while(current_item != NULL)
@@ -53,10 +76,12 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
         gtk_list_store_append(items_list, &row_iter);
 
         gtk_list_store_set(items_list, &row_iter,
-                           ITEMS_COL_ACTION_TITLE, current_item->action_name,
-                           ITEMS_COL_ACTION_NAME, current_item->action_name,
-                           ITEMS_COL_ICON_NAME, current_item->icon_name,
                            ITEMS_COL_ICON_PIXBUF, icon,
+                           ITEMS_COL_ACTION_TITLE, current_item->action_name,
+                           ITEMS_COL_ACTION_CTX_NAME, get_context_name_by_id(current_item->action_context),
+                           ITEMS_COL_ACTION_NAME, current_item->action_name,
+                           ITEMS_COL_ACTION_CTX_ID, current_item->action_context,
+                           ITEMS_COL_ICON_NAME, current_item->icon_name,
                            -1);
 
         g_object_unref(icon);
@@ -171,12 +196,15 @@ void init_items_treeview(GtkTreeView *items_treeview)
     GtkTreeViewColumn *action_title_column = gtk_tree_view_column_new();
     GtkCellRenderer *icon_renderer = gtk_cell_renderer_pixbuf_new();
     GtkCellRenderer *action_title_renderer = gtk_cell_renderer_text_new();
+    GtkCellRenderer *action_ctx_renderer = gtk_cell_renderer_text_new();
 
     gtk_tree_view_column_pack_start(action_title_column, icon_renderer, FALSE);
     gtk_tree_view_column_pack_start(action_title_column, action_title_renderer, TRUE);
+    gtk_tree_view_column_pack_start(action_title_column, action_ctx_renderer, FALSE);
 
     gtk_tree_view_column_add_attribute(action_title_column, icon_renderer, "pixbuf", ITEMS_COL_ICON_PIXBUF);
     gtk_tree_view_column_add_attribute(action_title_column, action_title_renderer, "text", ITEMS_COL_ACTION_TITLE);
+    gtk_tree_view_column_add_attribute(action_title_column, action_ctx_renderer, "text", ITEMS_COL_ACTION_CTX_NAME);
 
     gtk_tree_view_append_column(items_treeview, action_title_column);
 }
@@ -240,17 +268,19 @@ ToolbarItem* extract_items_from_list(GtkListStore *items_list)
     {
         char *action_name = NULL;
         char *icon_name = NULL;
+        int action_context = 0;
 
         gtk_tree_model_get(GTK_TREE_MODEL(items_list), &row_iter,
                            ITEMS_COL_ACTION_NAME, &action_name,
                            ITEMS_COL_ICON_NAME, &icon_name,
+                           ITEMS_COL_ACTION_CTX_ID, &action_context,
                            -1);
 
         ToolbarItem *item = (ToolbarItem*)malloc(sizeof(ToolbarItem));
         item->action_name = action_name;
         item->icon_name = icon_name;
         item->action = find_action(action_name);
-        item->action_context = DDB_ACTION_CTX_MAIN;
+        item->action_context = action_context;
         item->next = NULL;
 
         new_items = toolbar_items_append(new_items, item);
