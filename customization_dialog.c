@@ -26,8 +26,9 @@ enum
 
 enum
 {
-    ACTIONS_COL_ACTION_TITLE,
-    ACTIONS_COL_ACTION_NAME,
+    ACTIONS_COL_TITLE,
+    ACTIONS_COL_NAME,
+    ACTIONS_COL_CTX,
     ACTIONS_COLS_NUM
 };
 
@@ -92,11 +93,12 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
     return items_list;
 }
 
-gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, char *required_group_name, GtkTreeIter *iter)
+gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeIter *ctx_group_iter, char *required_group_name, GtkTreeIter *iter)
 {
     gboolean iter_found = FALSE;
 
-    gboolean res = gtk_tree_model_get_iter_first(tree_model, iter);
+
+    gboolean res = gtk_tree_model_iter_children(tree_model, iter, ctx_group_iter);
     while(res)
     {
         char *group_name = NULL;
@@ -120,7 +122,60 @@ gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, char *required_
 
 GtkTreeStore* create_actions_tree_store()
 {
-    GtkTreeStore *actions_tree_store = gtk_tree_store_new(ACTIONS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING);
+    GtkTreeStore *actions_tree_store = gtk_tree_store_new(ACTIONS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+
+    GtkTreeIter main_ctx_group_iter;
+    GtkTreeIter selection_ctx_group_iter;
+    GtkTreeIter playlist_ctx_group_iter;
+    GtkTreeIter nowplaying_ctx_group_iter;
+
+    gtk_tree_store_append(actions_tree_store, &main_ctx_group_iter, NULL);
+    gtk_tree_store_append(actions_tree_store, &selection_ctx_group_iter, NULL);
+    gtk_tree_store_append(actions_tree_store, &playlist_ctx_group_iter, NULL);
+    gtk_tree_store_append(actions_tree_store, &nowplaying_ctx_group_iter, NULL);
+
+    gtk_tree_store_set(actions_tree_store, &main_ctx_group_iter,
+                       ACTIONS_COL_TITLE, "Main",
+                       ACTIONS_COL_NAME, "",
+                       ACTIONS_COL_CTX, 0,
+                       -1);
+
+    gtk_tree_store_set(actions_tree_store, &selection_ctx_group_iter,
+                       ACTIONS_COL_TITLE, "Selection",
+                       ACTIONS_COL_NAME, "",
+                       ACTIONS_COL_CTX, 0,
+                       -1);
+
+    gtk_tree_store_set(actions_tree_store, &playlist_ctx_group_iter,
+                       ACTIONS_COL_TITLE, "Playlist",
+                       ACTIONS_COL_NAME, "",
+                       ACTIONS_COL_CTX, 0,
+                       -1);
+
+    gtk_tree_store_set(actions_tree_store, &nowplaying_ctx_group_iter,
+                       ACTIONS_COL_TITLE, "Nowplaying",
+                       ACTIONS_COL_NAME, "",
+                       ACTIONS_COL_CTX, 0,
+                       -1);
+
+    struct
+    {
+        GtkTreeIter *ctx_group_iter;
+        int valid_flags;
+    } contexts[] =
+    {
+        [DDB_ACTION_CTX_MAIN] = { &main_ctx_group_iter, DB_ACTION_COMMON },
+        [DDB_ACTION_CTX_SELECTION] = { &selection_ctx_group_iter, (DB_ACTION_SINGLE_TRACK |
+                                                                   DB_ACTION_MULTIPLE_TRACKS |
+                                                                   DB_ACTION_CAN_MULTIPLE_TRACKS) },
+        [DDB_ACTION_CTX_PLAYLIST] = { &playlist_ctx_group_iter, (DB_ACTION_SINGLE_TRACK |
+                                                                 DB_ACTION_MULTIPLE_TRACKS |
+                                                                 DB_ACTION_CAN_MULTIPLE_TRACKS) },
+        [DDB_ACTION_CTX_NOWPLAYING] = { &nowplaying_ctx_group_iter, (DB_ACTION_SINGLE_TRACK |
+                                                                     DB_ACTION_MULTIPLE_TRACKS |
+                                                                     DB_ACTION_CAN_MULTIPLE_TRACKS) }
+    };
+
 
     DB_plugin_t **plugins = deadbeef->plug_get_list();
 
@@ -150,37 +205,47 @@ GtkTreeStore* create_actions_tree_store()
                 action_title = name_parts[0];
             }
 
-            GtkTreeIter action_iter;
-
-            if(group_name != NULL)
+            for(int curr_context = DDB_ACTION_CTX_MAIN; curr_context < DDB_ACTION_CTX_COUNT; curr_context++)
             {
-                GtkTreeIter group_iter;
+                if((curr_action->flags & contexts[curr_context].valid_flags) == 0)
+                    continue;
 
-                gboolean group_entry_exist = actions_tree_find_group_entry(GTK_TREE_MODEL(actions_tree_store),
-                                                                           group_name,
-                                                                           &group_iter);
+                GtkTreeIter *ctx_group_iter = contexts[curr_context].ctx_group_iter;
 
-                if(!group_entry_exist)
+                GtkTreeIter action_iter;
+
+                if(group_name != NULL)
                 {
-                    gtk_tree_store_append(actions_tree_store, &group_iter, NULL);
-                    gtk_tree_store_set(actions_tree_store, &group_iter,
-                                       ACTIONS_COL_ACTION_TITLE, group_name,
-                                       ACTIONS_COL_ACTION_NAME, "",
-                                       -1);
+                    GtkTreeIter group_iter;
+
+                    gboolean group_exists = actions_tree_find_group_entry(GTK_TREE_MODEL(actions_tree_store),
+                                                                          ctx_group_iter,
+                                                                          group_name,
+                                                                          &group_iter);
+
+                    if(!group_exists)
+                    {
+                        gtk_tree_store_append(actions_tree_store, &group_iter, ctx_group_iter);
+                        gtk_tree_store_set(actions_tree_store, &group_iter,
+                                           ACTIONS_COL_TITLE, group_name,
+                                           ACTIONS_COL_NAME, "",
+                                           ACTIONS_COL_CTX, 0,
+                                           -1);
+                    }
+
+                    gtk_tree_store_append(actions_tree_store, &action_iter, &group_iter);
+                }
+                else
+                {
+                    gtk_tree_store_append(actions_tree_store, &action_iter, ctx_group_iter);
                 }
 
-                gtk_tree_store_append(actions_tree_store, &action_iter, &group_iter);
+                gtk_tree_store_set(actions_tree_store, &action_iter,
+                                   ACTIONS_COL_TITLE, action_title,
+                                   ACTIONS_COL_NAME, curr_action->name,
+                                   ACTIONS_COL_CTX, curr_context,
+                                   -1);
             }
-            else
-            {
-                gtk_tree_store_append(actions_tree_store, &action_iter, NULL);
-            }
-
-
-            gtk_tree_store_set(actions_tree_store, &action_iter,
-                               ACTIONS_COL_ACTION_TITLE, action_title,
-                               ACTIONS_COL_ACTION_NAME, curr_action->name,
-                               -1);
 
             g_strfreev(name_parts);
 
@@ -216,7 +281,7 @@ void init_actions_treeview(GtkTreeView *actions_tree_view)
 
     gtk_tree_view_column_pack_end(action_name_column, action_name_renderer, TRUE);
 
-    gtk_tree_view_column_add_attribute(action_name_column, action_name_renderer, "text", ACTIONS_COL_ACTION_TITLE);
+    gtk_tree_view_column_add_attribute(action_name_column, action_name_renderer, "text", ACTIONS_COL_TITLE);
 
     gtk_tree_view_append_column(actions_tree_view, action_name_column);
 }
@@ -299,15 +364,12 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     GtkWidget *items_treeview = lookup_widget(d, "tb_items_treeview");
     GtkWidget *actions_treeview = lookup_widget(d, "actions_treeview");
-    GtkWidget *context_combobox = lookup_widget(d, "context_combobox");
 
     assert(items_treeview != NULL);
     assert(actions_treeview != NULL);
-    assert(context_combobox != NULL);
 
     GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
     GtkTreeModel *actions_tree_store = gtk_tree_view_get_model(GTK_TREE_VIEW(actions_treeview));
-    GtkTreeModel *context_list_store = gtk_combo_box_get_model(GTK_COMBO_BOX(context_combobox));
 
     GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
 
@@ -317,31 +379,29 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
-    if(gtk_combo_box_get_active(GTK_COMBO_BOX(context_combobox)) < 0)
-    {
-        printf("No context option is selected\n");
-        return;
-    }
-
     GtkTreeIter current_action_iter;
-    GtkTreeIter current_context_iter;
 
-    gboolean res = TRUE;
-    res = res && gtk_tree_selection_get_selected(actions_selection, &actions_tree_store, &current_action_iter);
-    res = res && gtk_combo_box_get_active_iter(GTK_COMBO_BOX(context_combobox), &current_context_iter);
+    gboolean res = gtk_tree_selection_get_selected(actions_selection, &actions_tree_store, &current_action_iter);
     assert(res == TRUE);
 
-    char *action_title = NULL;
     char *action_name = NULL;
+    int action_ctx = 0;
     gtk_tree_model_get(GTK_TREE_MODEL(actions_tree_store), &current_action_iter,
-                       ACTIONS_COL_ACTION_TITLE, &action_title,
-                       ACTIONS_COL_ACTION_NAME, &action_name,
+                       ACTIONS_COL_NAME, &action_name,
+                       ACTIONS_COL_CTX, &action_ctx,
                        -1);
 
     if(g_str_equal(action_name, ""))
     {
         printf("Group entry is selected, can't add item\n");
-        g_free(action_title);
+        g_free(action_name);
+        return;
+    }
+
+    DB_plugin_action_t *action = find_action(action_name);
+    if(action == NULL)
+    {
+        printf("Can't find action for id %s\n", action_name);
         g_free(action_name);
         return;
     }
@@ -352,13 +412,14 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
 
     gtk_list_store_set(GTK_LIST_STORE(items_list_store), &new_item_iter,
-                       ITEMS_COL_ACTION_TITLE, action_name,
+                       ITEMS_COL_ACTION_TITLE, action->title,
                        ITEMS_COL_ACTION_NAME, action_name,
                        ITEMS_COL_ICON_NAME, "gtk-missing-image",
                        ITEMS_COL_ICON_PIXBUF, new_item_icon,
+                       ITEMS_COL_ACTION_CTX_NAME, get_context_name_by_id(action_ctx),
+                       ITEMS_COL_ACTION_CTX_ID, action_ctx,
                        -1);
 
-    g_free(action_title);
     g_free(action_name);
     g_object_unref(new_item_icon);
 }
