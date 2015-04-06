@@ -286,42 +286,6 @@ void init_actions_treeview(GtkTreeView *actions_tree_view)
     gtk_tree_view_append_column(actions_tree_view, action_name_column);
 }
 
-void init_context_combobox(GtkComboBox *context_combobox)
-{
-    GtkListStore *context_list_store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
-
-    GtkTreeIter iter;
-
-    gtk_list_store_append(context_list_store, &iter);
-    gtk_list_store_set(context_list_store, &iter,
-                       CONTEXT_COL_NAME, "Main",
-                       CONTEXT_COL_ID, DDB_ACTION_CTX_MAIN,
-                       -1);
-
-    gtk_list_store_append(context_list_store, &iter);
-    gtk_list_store_set(context_list_store, &iter,
-                       CONTEXT_COL_NAME, "Selection",
-                       CONTEXT_COL_ID, DDB_ACTION_CTX_SELECTION,
-                       -1);
-
-    gtk_list_store_append(context_list_store, &iter);
-    gtk_list_store_set(context_list_store, &iter,
-                       CONTEXT_COL_NAME, "Playlist",
-                       CONTEXT_COL_ID, DDB_ACTION_CTX_PLAYLIST,
-                       -1);
-
-    gtk_list_store_append(context_list_store, &iter);
-    gtk_list_store_set(context_list_store, &iter,
-                       CONTEXT_COL_NAME, "Nowplaying",
-                       CONTEXT_COL_ID, DDB_ACTION_CTX_NOWPLAYING,
-                       -1);
-
-    gtk_combo_box_set_model(context_combobox, GTK_TREE_MODEL(context_list_store));
-    g_object_unref(context_list_store);
-
-    gtk_combo_box_set_active(context_combobox, 0);
-}
-
 ToolbarItem* extract_items_from_list(GtkListStore *items_list)
 {
     GtkTreeIter row_iter;
@@ -570,19 +534,15 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
 {
     GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
     GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
-    GtkWidget *context_combobox = lookup_widget(dialog, "context_combobox");
 
     assert(items_treeview != NULL);
     assert(actions_treeview != NULL);
-    assert(context_combobox != NULL);
 
     init_items_treeview(GTK_TREE_VIEW(items_treeview));
     gtk_tree_view_set_model(GTK_TREE_VIEW(items_treeview), GTK_TREE_MODEL(items_list_store));
 
     init_actions_treeview(GTK_TREE_VIEW(actions_treeview));
     gtk_tree_view_set_model(GTK_TREE_VIEW(actions_treeview), GTK_TREE_MODEL(actions_tree_store));
-
-    init_context_combobox(GTK_COMBO_BOX(context_combobox));
 
     dialog_connect_signals(dialog);
 }

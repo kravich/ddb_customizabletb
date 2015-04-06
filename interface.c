@@ -52,12 +52,8 @@ create_tb_customization_dialog (void)
   GtkWidget *vbox2;
   GtkWidget *scrolledwindow1;
   GtkWidget *actions_treeview;
-  GtkWidget *vbox3;
-  GtkWidget *hbox2;
-  GtkWidget *label3;
-  GtkWidget *context_combobox;
+  GtkWidget *table2;
   GtkWidget *button_add;
-  GtkWidget *alignment3;
   GtkWidget *label2;
   GtkWidget *dialog_action_area1;
   GtkWidget *cancelbutton1;
@@ -173,29 +169,15 @@ create_tb_customization_dialog (void)
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), actions_treeview);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (actions_treeview), FALSE);
 
-  vbox3 = gtk_vbox_new (TRUE, 0);
-  gtk_widget_show (vbox3);
-  gtk_box_pack_start (GTK_BOX (vbox2), vbox3, FALSE, FALSE, 2);
-
-  hbox2 = gtk_hbox_new (FALSE, 4);
-  gtk_widget_show (hbox2);
-  gtk_box_pack_start (GTK_BOX (vbox3), hbox2, TRUE, TRUE, 0);
-
-  label3 = gtk_label_new ("Context:");
-  gtk_widget_show (label3);
-  gtk_box_pack_start (GTK_BOX (hbox2), label3, FALSE, FALSE, 0);
-
-  context_combobox = gtk_combo_box_text_new ();
-  gtk_widget_show (context_combobox);
-  gtk_box_pack_start (GTK_BOX (hbox2), context_combobox, TRUE, TRUE, 0);
+  table2 = gtk_table_new (2, 2, TRUE);
+  gtk_widget_show (table2);
+  gtk_box_pack_start (GTK_BOX (vbox2), table2, FALSE, FALSE, 2);
 
   button_add = gtk_button_new_from_stock ("gtk-add");
   gtk_widget_show (button_add);
-  gtk_box_pack_start (GTK_BOX (hbox2), button_add, FALSE, FALSE, 0);
-
-  alignment3 = gtk_alignment_new (0.5, 0.5, 1, 1);
-  gtk_widget_show (alignment3);
-  gtk_box_pack_start (GTK_BOX (vbox3), alignment3, TRUE, TRUE, 0);
+  gtk_table_attach (GTK_TABLE (table2), button_add, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
 
   label2 = gtk_label_new ("Available actions");
   gtk_widget_show (label2);
@@ -240,12 +222,8 @@ create_tb_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, vbox2, "vbox2");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, scrolledwindow1, "scrolledwindow1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, actions_treeview, "actions_treeview");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, vbox3, "vbox3");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox2, "hbox2");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label3, "label3");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, context_combobox, "context_combobox");
+  GLADE_HOOKUP_OBJECT (tb_customization_dialog, table2, "table2");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_add, "button_add");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment3, "alignment3");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, label2, "label2");
   GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_action_area1, "dialog_action_area1");
   GLADE_HOOKUP_OBJECT (tb_customization_dialog, cancelbutton1, "cancelbutton1");
