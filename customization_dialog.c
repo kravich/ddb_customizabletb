@@ -66,6 +66,10 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
     ToolbarItem *current_item = toolbar_items;
     while(current_item != NULL)
     {
+        const char *action_title = current_item->action_name;
+        if(current_item->action != NULL)
+            action_title = current_item->action->title;
+
         GdkPixbuf *icon = NULL;
 
         if(current_item->action != NULL)
@@ -78,7 +82,7 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
 
         gtk_list_store_set(items_list, &row_iter,
                            ITEMS_COL_ICON_PIXBUF, icon,
-                           ITEMS_COL_ACTION_TITLE, current_item->action_name,
+                           ITEMS_COL_ACTION_TITLE, action_title,
                            ITEMS_COL_ACTION_CTX_NAME, get_context_name_by_id(current_item->action_context),
                            ITEMS_COL_ACTION_NAME, current_item->action_name,
                            ITEMS_COL_ACTION_CTX_ID, current_item->action_context,
