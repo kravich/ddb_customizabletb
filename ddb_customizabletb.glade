@@ -524,7 +524,7 @@
 	  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	  <child>
-	    <widget class="GtkIconView" id="stock_iconview">
+	    <widget class="GtkIconView" id="iconview">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="selection_mode">GTK_SELECTION_SINGLE</property>

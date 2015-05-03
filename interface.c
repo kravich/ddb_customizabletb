@@ -238,7 +238,7 @@ create_icon_selection_dialog (void)
   GtkWidget *icon_selection_dialog;
   GtkWidget *dialog_vbox1;
   GtkWidget *scrolledwindow2;
-  GtkWidget *stock_iconview;
+  GtkWidget *iconview;
   GtkWidget *dialog_action_area2;
   GtkWidget *cancelbutton2;
   GtkWidget *okbutton2;
@@ -258,9 +258,9 @@ create_icon_selection_dialog (void)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_SHADOW_IN);
 
-  stock_iconview = gtk_icon_view_new ();
-  gtk_widget_show (stock_iconview);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow2), stock_iconview);
+  iconview = gtk_icon_view_new ();
+  gtk_widget_show (iconview);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow2), iconview);
 
   dialog_action_area2 = gtk_dialog_get_action_area (GTK_DIALOG (icon_selection_dialog));
   gtk_widget_show (dialog_action_area2);
@@ -280,7 +280,7 @@ create_icon_selection_dialog (void)
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, icon_selection_dialog, "icon_selection_dialog");
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, dialog_vbox1, "dialog_vbox1");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, scrolledwindow2, "scrolledwindow2");
-  GLADE_HOOKUP_OBJECT (icon_selection_dialog, stock_iconview, "stock_iconview");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, iconview, "iconview");
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, dialog_action_area2, "dialog_action_area2");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, cancelbutton2, "cancelbutton2");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, okbutton2, "okbutton2");

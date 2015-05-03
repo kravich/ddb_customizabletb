@@ -462,7 +462,7 @@ const char* icons_list[] =
 
 const int icons_list_size = sizeof(icons_list) / sizeof(icons_list[0]);
 
-GtkTreeModel* create_stock_icons_list()
+GtkTreeModel* create_icons_list()
 {
     GtkListStore *list = gtk_list_store_new(ICONS_COLS_NUM, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 
@@ -488,7 +488,7 @@ GtkTreeModel* create_stock_icons_list()
     return GTK_TREE_MODEL(list);
 }
 
-GtkTreePath* stock_icons_list_find(GtkTreeModel *icons_list, const char *stock_id_to_find)
+GtkTreePath* icons_list_find(GtkTreeModel *icons_list, const char *icon_name_to_find)
 {
     GtkTreePath *path = NULL;
     GtkTreeIter row_iter;
@@ -496,18 +496,18 @@ GtkTreePath* stock_icons_list_find(GtkTreeModel *icons_list, const char *stock_i
     gboolean res = gtk_tree_model_get_iter_first(icons_list, &row_iter);
     while(res == TRUE)
     {
-        char *curr_stock_id = NULL;
+        char *curr_icon_name = NULL;
 
-        gtk_tree_model_get(icons_list, &row_iter, ICONS_COL_NAME, &curr_stock_id, -1);
+        gtk_tree_model_get(icons_list, &row_iter, ICONS_COL_NAME, &curr_icon_name, -1);
 
-        if(g_str_equal(curr_stock_id, stock_id_to_find))
+        if(g_str_equal(curr_icon_name, icon_name_to_find))
         {
             path = gtk_tree_model_get_path(icons_list, &row_iter);
-            g_free(curr_stock_id);
+            g_free(curr_icon_name);
             break;
         }
 
-        g_free(curr_stock_id);
+        g_free(curr_icon_name);
 
         res = gtk_tree_model_iter_next(icons_list, &row_iter);
     }
@@ -515,26 +515,26 @@ GtkTreePath* stock_icons_list_find(GtkTreeModel *icons_list, const char *stock_i
     return path;
 }
 
-void select_icon(GtkIconView *stock_iconview, const char *stock_id)
+void select_icon(GtkIconView *iconview, const char *icon_name)
 {
-    GtkTreeModel *icons_list = gtk_icon_view_get_model(stock_iconview);
+    GtkTreeModel *icons_list = gtk_icon_view_get_model(iconview);
     assert(icons_list != NULL);
 
-    GtkTreePath *path = stock_icons_list_find(icons_list, stock_id);
+    GtkTreePath *path = icons_list_find(icons_list, icon_name);
 
     if(path != NULL)
     {
-        gtk_icon_view_select_path(stock_iconview, path);
+        gtk_icon_view_select_path(iconview, path);
         gtk_tree_path_free(path);
     }
 }
 
-char* get_selected_icon(GtkIconView *stock_iconview)
+char* get_selected_icon(GtkIconView *iconview)
 {
-    GtkTreeModel *icons_list = gtk_icon_view_get_model(stock_iconview);
+    GtkTreeModel *icons_list = gtk_icon_view_get_model(iconview);
     assert(icons_list != NULL);
 
-    GList *selected_items = gtk_icon_view_get_selected_items(stock_iconview);
+    GList *selected_items = gtk_icon_view_get_selected_items(iconview);
 
     if(selected_items == NULL)
         return NULL;
@@ -546,38 +546,38 @@ char* get_selected_icon(GtkIconView *stock_iconview)
 
     g_list_free_full(selected_items, (GDestroyNotify)gtk_tree_path_free);
 
-    char *selected_stock_id = NULL;
+    char *selected_icon_name = NULL;
 
-    gtk_tree_model_get(icons_list, &curr_iter, ICONS_COL_NAME, &selected_stock_id, -1);
+    gtk_tree_model_get(icons_list, &curr_iter, ICONS_COL_NAME, &selected_icon_name, -1);
 
-    return selected_stock_id;
+    return selected_icon_name;
 }
 
-char* run_icon_selection_dialog(const char *icon_stock_id)
+char* run_icon_selection_dialog(const char *current_icon_name)
 {
-    assert(icon_stock_id != NULL);
+    assert(current_icon_name != NULL);
 
     GtkWidget *d = create_icon_selection_dialog();
 
-    GtkWidget *stock_iconview = lookup_widget(d, "stock_iconview");
-    assert(stock_iconview != NULL);
+    GtkWidget *iconview = lookup_widget(d, "iconview");
+    assert(iconview != NULL);
 
-    GtkTreeModel *stock_icons_list = create_stock_icons_list();
-    gtk_icon_view_set_model(GTK_ICON_VIEW(stock_iconview), stock_icons_list);
-    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(stock_iconview), ICONS_COL_PIXBUF);
-    gtk_icon_view_set_text_column(GTK_ICON_VIEW(stock_iconview), ICONS_COL_NAME);
+    GtkTreeModel *icons_list = create_icons_list();
+    gtk_icon_view_set_model(GTK_ICON_VIEW(iconview), icons_list);
+    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconview), ICONS_COL_PIXBUF);
+    gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
 
-    select_icon(GTK_ICON_VIEW(stock_iconview), icon_stock_id);
+    select_icon(GTK_ICON_VIEW(iconview), current_icon_name);
 
-    char *new_icon_stock_id = NULL;
+    char *new_icon_name = NULL;
 
     gint res = gtk_dialog_run(GTK_DIALOG(d));
     if(res == GTK_RESPONSE_OK)
     {
-        new_icon_stock_id = get_selected_icon(GTK_ICON_VIEW(stock_iconview));
+        new_icon_name = get_selected_icon(GTK_ICON_VIEW(iconview));
     }
 
     gtk_widget_destroy(d);
 
-    return new_icon_stock_id;
+    return new_icon_name;
 }
