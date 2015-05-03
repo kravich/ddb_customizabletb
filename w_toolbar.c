@@ -103,8 +103,8 @@ void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
-    char serialized_layout[256];
-    toolbar_items_serialize(toolbar->items_list, serialized_layout, 256);
+    char serialized_layout[TMP_BUFF_SIZE] = {0};
+    toolbar_items_serialize(toolbar->items_list, serialized_layout, TMP_BUFF_SIZE);
 
     char *layout_param = g_strdup_printf(" layout=\"%s\"", serialized_layout);
     strncat(s, layout_param, sz);
