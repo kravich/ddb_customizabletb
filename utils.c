@@ -5,7 +5,7 @@
 
 extern DB_functions_t *deadbeef;
 
-DB_plugin_action_t* find_action(char *action_name)
+DB_plugin_action_t* find_action(const char *action_name)
 {
     DB_plugin_t **plugins = deadbeef->plug_get_list();
 

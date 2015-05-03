@@ -14,7 +14,7 @@
 #define TOOLBAR_ICON_SIZE 24
 #endif
 
-DB_plugin_action_t* find_action(char *action_name);
+DB_plugin_action_t* find_action(const char *action_name);
 
 GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px);
 

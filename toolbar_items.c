@@ -89,54 +89,36 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
 ToolbarItem* create_default_toolbar_items()
 {
     ToolbarItem *toolbar_items = NULL;
-    ToolbarItem *item = NULL;
 
-    // TODO: add check for malloc() return value
+    struct
+    {
+        const char *action_name;
+        const char *icon_name;
+    }
+    default_items[] =
+    {
+        {"stop", "media-playback-stop"},
+        {"play", "media-playback-start"},
+        {"toggle_pause", "media-playback-pause"},
+        {"prev", "media-skip-backward"},
+        {"next", "media-skip-forward"}
+    };
 
-    item = g_malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("stop");
-    item->icon_name = g_strdup("media-playback-stop");
-    item->action = find_action(item->action_name);
-    item->action_context = DDB_ACTION_CTX_MAIN;
-    item->next = NULL;
+    int default_items_size = sizeof(default_items) / sizeof(default_items[0]);
 
-    toolbar_items = toolbar_items_append(toolbar_items, item);
+    for(int i = 0; i < default_items_size; i++)
+    {
+        ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
+        assert(item != NULL); // TODO: add proper check for this case
 
-    item = g_malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("play");
-    item->icon_name = g_strdup("media-playback-start");
-    item->action = find_action(item->action_name);
-    item->action_context = DDB_ACTION_CTX_MAIN;
-    item->next = NULL;
+        item->action_name = g_strdup(default_items[i].action_name);
+        item->icon_name = g_strdup(default_items[i].icon_name);
+        item->action = find_action(default_items[i].action_name);
+        item->action_context = DDB_ACTION_CTX_MAIN;
+        item->next = NULL;
 
-    toolbar_items = toolbar_items_append(toolbar_items, item);
-
-    item = g_malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("toggle_pause");
-    item->icon_name = g_strdup("media-playback-pause");
-    item->action = find_action(item->action_name);
-    item->action_context = DDB_ACTION_CTX_MAIN;
-    item->next = NULL;
-
-    toolbar_items = toolbar_items_append(toolbar_items, item);
-
-    item = g_malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("prev");
-    item->icon_name = g_strdup("media-skip-backward");
-    item->action = find_action(item->action_name);
-    item->action_context = DDB_ACTION_CTX_MAIN;
-    item->next = NULL;
-
-    toolbar_items = toolbar_items_append(toolbar_items, item);
-
-    item = g_malloc(sizeof(ToolbarItem));
-    item->action_name = g_strdup("next");
-    item->icon_name = g_strdup("media-skip-forward");
-    item->action = find_action(item->action_name);
-    item->action_context = DDB_ACTION_CTX_MAIN;
-    item->next = NULL;
-
-    toolbar_items = toolbar_items_append(toolbar_items, item);
+        toolbar_items = toolbar_items_append(toolbar_items, item);
+    }
 
     return toolbar_items;
 }
