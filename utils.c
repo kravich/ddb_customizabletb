@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include <glib.h>
+#include <assert.h>
 
 extern DB_functions_t *deadbeef;
 
@@ -30,56 +31,36 @@ DB_plugin_action_t* find_action(char *action_name)
     return NULL;
 }
 
-GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id, GtkIconSize icon_size)
+GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px)
 {
-    GtkStockItem stock_item;
-    if(!gtk_stock_lookup(stock_id, &stock_item))
-        stock_id = "gtk-missing-image";
+    GtkIconTheme *default_icon_theme = gtk_icon_theme_get_default();
 
-    GtkWidget *image = gtk_image_new();
-    g_object_ref_sink(image);
+    GError *error = NULL;
+    GdkPixbuf *pixbuf = gtk_icon_theme_load_icon(default_icon_theme, icon_name, icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error);
 
-    GdkPixbuf *pixbuf = gtk_widget_render_icon(image, stock_id, icon_size, NULL);
+    if(error != NULL)
+    {
+        printf("Failed to create icon: %s\n", error->message);
+        g_error_free(error);
+        error = NULL;
 
-    g_object_unref(image);
+        pixbuf = gtk_icon_theme_load_icon(default_icon_theme, "image-missing", icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error); // TODO: is it bulletproof or could also fail?
+        assert(error == NULL);
+    }
+	
+	assert(pixbuf != NULL);
 
     return pixbuf;
 }
 
-GtkWidget* create_image_by_name(const char *button_icon_name)
+GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px)
 {
-    GtkWidget *image = NULL;
+    GdkPixbuf *icon_pixbuf = create_pixbuf_by_icon_name(button_icon_name, icon_size_px);
+    if(icon_pixbuf == NULL)
+        return NULL;
 
-    if(button_icon_name != NULL)
-    {
-        // try to find icon name in stock items
-        GtkStockItem stock_item;
-        if(gtk_stock_lookup(button_icon_name, &stock_item))
-        {
-            image = gtk_image_new_from_stock(button_icon_name, GTK_ICON_SIZE_BUTTON);
-        }
-
-        // if previous attempt failed, treat icon name
-        // as file name and try to load it from pixmap directories
-        /*if(image == NULL)
-        {
-            char *path_to_pixmap_file = find_pixmap_file(button_icon_name);
-            if(path_to_pixmap_file != NULL)
-            {
-                image = gtk_image_new_from_file(path_to_pixmap_file);
-                g_free(path_to_pixmap_file);
-            }
-        }*/
-
-        // There is an another option - treat icon name as absolute path.
-        // Should it be allowed?
-    }
-
-    // if everything failed - create a 'missing image' icon
-    if(image == NULL)
-    {
-        image = gtk_image_new_from_stock("gtk-missing-image", GTK_ICON_SIZE_BUTTON);
-    }
+    GtkWidget *image = gtk_image_new_from_pixbuf(icon_pixbuf);
+    g_object_unref(icon_pixbuf);
 
     return image;
 }

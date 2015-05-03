@@ -95,7 +95,7 @@ ToolbarItem* create_default_toolbar_items()
 
     item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("stop");
-    item->icon_name = g_strdup("gtk-media-stop");
+    item->icon_name = g_strdup("media-playback-stop");
     item->action = find_action(item->action_name);
     item->action_context = DDB_ACTION_CTX_MAIN;
     item->next = NULL;
@@ -104,7 +104,7 @@ ToolbarItem* create_default_toolbar_items()
 
     item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("play");
-    item->icon_name = g_strdup("gtk-media-play");
+    item->icon_name = g_strdup("media-playback-start");
     item->action = find_action(item->action_name);
     item->action_context = DDB_ACTION_CTX_MAIN;
     item->next = NULL;
@@ -113,7 +113,7 @@ ToolbarItem* create_default_toolbar_items()
 
     item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("toggle_pause");
-    item->icon_name = g_strdup("gtk-media-pause");
+    item->icon_name = g_strdup("media-playback-pause");
     item->action = find_action(item->action_name);
     item->action_context = DDB_ACTION_CTX_MAIN;
     item->next = NULL;
@@ -122,7 +122,7 @@ ToolbarItem* create_default_toolbar_items()
 
     item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("prev");
-    item->icon_name = g_strdup("gtk-media-previous");
+    item->icon_name = g_strdup("media-skip-backward");
     item->action = find_action(item->action_name);
     item->action_context = DDB_ACTION_CTX_MAIN;
     item->next = NULL;
@@ -131,7 +131,7 @@ ToolbarItem* create_default_toolbar_items()
 
     item = g_malloc(sizeof(ToolbarItem));
     item->action_name = g_strdup("next");
-    item->icon_name = g_strdup("gtk-media-next");
+    item->icon_name = g_strdup("media-skip-forward");
     item->action = find_action(item->action_name);
     item->action_context = DDB_ACTION_CTX_MAIN;
     item->next = NULL;

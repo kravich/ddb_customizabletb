@@ -172,14 +172,16 @@ void fill_toolbar(w_toolbar_t *toolbar)
         GtkWidget *image = NULL;
         if(current_item->action != NULL)
         {
-            image = create_image_by_name(current_item->icon_name);
+            image = create_image_by_name(current_item->icon_name, TOOLBAR_ICON_SIZE);
             g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
         }
         else
         {
-            image = gtk_image_new_from_stock("gtk-no", GTK_ICON_SIZE_BUTTON);
+            image = create_image_by_name("process-stop", TOOLBAR_ICON_SIZE);
             g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_no_action_msg), NULL);
         }
+
+        assert(image != NULL);
 
         gtk_widget_show(image);
         gtk_container_add(GTK_CONTAINER(button), image);

@@ -8,10 +8,16 @@
 
 #include <deadbeef/deadbeef.h>
 
+#if GTK_CHECK_VERSION(3,0,0)
+#define TOOLBAR_ICON_SIZE 16
+#else
+#define TOOLBAR_ICON_SIZE 24
+#endif
+
 DB_plugin_action_t* find_action(char *action_name);
 
-GdkPixbuf* create_pixbuf_from_stock_icon(const char *stock_id, GtkIconSize icon_size);
+GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px);
 
-GtkWidget* create_image_by_name(const char *button_icon_name);
+GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px);
 
 #endif

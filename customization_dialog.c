@@ -73,9 +73,9 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
         GdkPixbuf *icon = NULL;
 
         if(current_item->action != NULL)
-            icon = create_pixbuf_from_stock_icon(current_item->icon_name, GTK_ICON_SIZE_BUTTON);
+            icon = create_pixbuf_by_icon_name(current_item->icon_name, 16);
         else
-            icon = create_pixbuf_from_stock_icon("gtk-no", GTK_ICON_SIZE_BUTTON);
+            icon = create_pixbuf_by_icon_name("process-stop", 16);
 
         GtkTreeIter row_iter;
         gtk_list_store_append(items_list, &row_iter);
@@ -374,7 +374,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
-    GdkPixbuf *new_item_icon = create_pixbuf_from_stock_icon("gtk-missing-image", GTK_ICON_SIZE_BUTTON);
+    GdkPixbuf *new_item_icon = create_pixbuf_by_icon_name("image-missing", 16);
 
     GtkTreeIter new_item_iter;
     gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
@@ -382,7 +382,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_set(GTK_LIST_STORE(items_list_store), &new_item_iter,
                        ITEMS_COL_ACTION_TITLE, action->title,
                        ITEMS_COL_ACTION_NAME, action_name,
-                       ITEMS_COL_ICON_NAME, "gtk-missing-image",
+                       ITEMS_COL_ICON_NAME, "image-missing",
                        ITEMS_COL_ICON_PIXBUF, new_item_icon,
                        ITEMS_COL_ACTION_CTX_NAME, get_context_name_by_id(action_ctx),
                        ITEMS_COL_ACTION_CTX_ID, action_ctx,
@@ -499,7 +499,7 @@ void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
 
     if(new_icon_name != NULL)
     {
-        GdkPixbuf *new_icon_pixbuf = create_pixbuf_from_stock_icon(new_icon_name, GTK_ICON_SIZE_BUTTON);
+        GdkPixbuf *new_icon_pixbuf = create_pixbuf_by_icon_name(new_icon_name, 16);
 
         gtk_list_store_set(GTK_LIST_STORE(items_list_store), &selected_item_iter,
                            ITEMS_COL_ICON_PIXBUF, new_icon_pixbuf,
