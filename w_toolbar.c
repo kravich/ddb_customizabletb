@@ -5,9 +5,10 @@
 #include <assert.h>
 
 #include "toolbar_items.h"
-#include "interface.h"
 #include "customization_dialog.h"
 #include "utils.h"
+
+#define TMP_BUFF_SIZE 256
 
 extern DB_functions_t *deadbeef;
 extern ddb_gtkui_t *gtkui;
@@ -57,8 +58,8 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
 
     buff[0] = '\0';
 
-    char key[256] = {0};
-    char val[256] = {0};
+    char key[TMP_BUFF_SIZE] = {0};
+    char val[TMP_BUFF_SIZE] = {0};
 
     // TODO: use more reliable way to parse layout
     int vars_read = sscanf(params, "%255[^=]=\"%255[^=\"]\"", key, val);
@@ -81,12 +82,11 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
-    #define PARAMS_SIZE 256
-    char params[PARAMS_SIZE] = {0};
-    const char *p = extract_widget_params(s, params, PARAMS_SIZE);
+    char params[TMP_BUFF_SIZE] = {0};
+    const char *p = extract_widget_params(s, params, TMP_BUFF_SIZE);
 
-    char layout_str[256];
-    extract_layout_param(params, layout_str, 256);
+    char layout_str[TMP_BUFF_SIZE] = {0};
+    extract_layout_param(params, layout_str, TMP_BUFF_SIZE);
 
     ToolbarItem *saved_toolbar_items = toolbar_items_deserialize(layout_str);
 
