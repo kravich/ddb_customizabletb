@@ -43,7 +43,7 @@ static int toolbar_connect(void)
 
 static DB_misc_t toolbar_plugin =
 {
-    DDB_REQUIRE_API_VERSION(1, 0)
+    DDB_REQUIRE_API_VERSION(1, 5)
 
     .plugin.type = DB_PLUGIN_MISC,
 
