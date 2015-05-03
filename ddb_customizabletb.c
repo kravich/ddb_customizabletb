@@ -9,17 +9,6 @@
 DB_functions_t *deadbeef = NULL;
 ddb_gtkui_t *gtkui = NULL;
 
-static DB_misc_t toolbar_plugin;
-
-#if GTK_CHECK_VERSION(3,0,0)
-DB_plugin_t* ddb_customizabletb_gtk3_load(DB_functions_t *db_api)
-#else
-DB_plugin_t* ddb_customizabletb_gtk2_load(DB_functions_t *db_api)
-#endif
-{
-    deadbeef = db_api;
-    return (DB_plugin_t*)&toolbar_plugin;
-}
 
 static int toolbar_connect(void)
 {
@@ -83,3 +72,13 @@ static DB_misc_t toolbar_plugin =
 
     .plugin.configdialog = NULL
 };
+
+#if GTK_CHECK_VERSION(3,0,0)
+DB_plugin_t* ddb_customizabletb_gtk3_load(DB_functions_t *db_api)
+#else
+DB_plugin_t* ddb_customizabletb_gtk2_load(DB_functions_t *db_api)
+#endif
+{
+    deadbeef = db_api;
+    return (DB_plugin_t*)&toolbar_plugin;
+}
