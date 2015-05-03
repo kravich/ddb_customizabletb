@@ -45,9 +45,9 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
 
 ToolbarItem* toolbar_items_deserialize(char *layout)
 {
-    char **elements = g_strsplit(layout, ",", -1);
-
     ToolbarItem *toolbar_items = NULL;
+
+    char **elements = g_strsplit(layout, ",", -1);
 
     char **current_element = elements;
     while(*current_element != NULL)
@@ -61,6 +61,7 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
             g_strfreev(parts);
             g_strfreev(elements);
             free_items_list(toolbar_items);
+            if(item != NULL) g_free(item);
             return NULL;
         }
 
