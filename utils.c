@@ -36,16 +36,16 @@ GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px)
     GtkIconTheme *default_icon_theme = gtk_icon_theme_get_default();
 
     GError *error = NULL;
-    GdkPixbuf *pixbuf = gtk_icon_theme_load_icon(default_icon_theme, icon_name, icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error);
+    GdkPixbuf *pixbuf = NULL;
 
-    if(error != NULL)
+    if(gtk_icon_theme_has_icon(default_icon_theme, icon_name))
     {
-        printf("Failed to create icon: %s\n", error->message);
-        g_error_free(error);
-        error = NULL;
-
+        pixbuf = gtk_icon_theme_load_icon(default_icon_theme, icon_name, icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error);
+    }
+    else
+    {
+        printf("Current theme does not have icon %s\n", icon_name);
         pixbuf = gtk_icon_theme_load_icon(default_icon_theme, "image-missing", icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error); // TODO: is it bulletproof or could also fail?
-        assert(error == NULL);
     }
 	
 	assert(pixbuf != NULL);
