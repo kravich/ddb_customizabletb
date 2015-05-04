@@ -170,7 +170,15 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 
 void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
 {
-    printf("No action\n");
+    GtkWidget *msgbox = gtk_message_dialog_new(NULL,
+                                               GTK_DIALOG_MODAL,
+                                               GTK_MESSAGE_ERROR,
+                                               GTK_BUTTONS_OK,
+                                               "Action assigned to this button was not found");
+
+    gtk_dialog_run(GTK_DIALOG(msgbox));
+
+    gtk_widget_destroy(msgbox);
 }
 
 void fill_toolbar(w_toolbar_t *toolbar)
