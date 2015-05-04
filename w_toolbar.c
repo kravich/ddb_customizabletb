@@ -58,24 +58,29 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
 
     buff[0] = '\0';
 
-    char key[TMP_BUFF_SIZE] = {0};
-    char val[TMP_BUFF_SIZE] = {0};
-
-    // TODO: use more reliable way to parse layout
-    int vars_read = sscanf(params, "%255[^=]=\"%255[^=\"]\"", key, val);
-    if(vars_read != 2)
+    GError *error = NULL;
+    GRegex *regex = g_regex_new("\\s*layout\\s*=\\s*\\\"(.*)\\\"\\s*", 0, 0, &error);
+    if(error != NULL)
     {
-        printf("vars read: %d\n", vars_read);
+        printf("Failed to compile regex: %s\n", error->message);
+        g_error_free(error);
         return;
     }
 
-    g_strstrip(key);
-    g_strstrip(val);
+    GMatchInfo *match_info = NULL;
 
-    if(strcmp(key, "layout") == 0)
+    if(!g_regex_match(regex, params, 0, &match_info))
     {
-        strncpy(buff, val, buff_size - 1);
+        printf("'layout' param was not found\n");
+        return;
     }
+
+    char *param_value = g_match_info_fetch(match_info, 1);
+    strncpy(buff, param_value, buff_size - 1);
+
+    g_free(param_value);
+    g_match_info_unref(match_info);
+    g_regex_unref(regex);
 }
 
 const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
