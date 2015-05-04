@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkDialog" id="tb_customization_dialog">
+<widget class="GtkDialog" id="customization_dialog">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Customize toolbar</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>

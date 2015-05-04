@@ -553,7 +553,7 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
 
 ToolbarItem* run_customization_dialog(ToolbarItem *current_toolbar_items)
 {
-    GtkWidget *d = create_tb_customization_dialog();
+    GtkWidget *d = create_customization_dialog();
 
     GtkListStore *items_list_store = create_items_list_store(current_toolbar_items);
     GtkTreeStore *actions_tree_store = create_actions_tree_store();

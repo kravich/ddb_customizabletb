@@ -27,9 +27,9 @@
   g_object_set_data (G_OBJECT (component), name, widget)
 
 GtkWidget*
-create_tb_customization_dialog (void)
+create_customization_dialog (void)
 {
-  GtkWidget *tb_customization_dialog;
+  GtkWidget *customization_dialog;
   GtkWidget *dialog_main_vbox;
   GtkWidget *hbox1;
   GtkWidget *frame1;
@@ -59,13 +59,13 @@ create_tb_customization_dialog (void)
   GtkWidget *cancelbutton1;
   GtkWidget *okbutton1;
 
-  tb_customization_dialog = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (tb_customization_dialog), "Customize toolbar");
-  gtk_window_set_default_size (GTK_WINDOW (tb_customization_dialog), 300, 360);
-  gtk_window_set_type_hint (GTK_WINDOW (tb_customization_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
-  gtk_dialog_set_has_separator (GTK_DIALOG (tb_customization_dialog), FALSE);
+  customization_dialog = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (customization_dialog), "Customize toolbar");
+  gtk_window_set_default_size (GTK_WINDOW (customization_dialog), 300, 360);
+  gtk_window_set_type_hint (GTK_WINDOW (customization_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
+  gtk_dialog_set_has_separator (GTK_DIALOG (customization_dialog), FALSE);
 
-  dialog_main_vbox = gtk_dialog_get_content_area (GTK_DIALOG (tb_customization_dialog));
+  dialog_main_vbox = gtk_dialog_get_content_area (GTK_DIALOG (customization_dialog));
   gtk_widget_show (dialog_main_vbox);
 
   hbox1 = gtk_hbox_new (FALSE, 0);
@@ -184,52 +184,52 @@ create_tb_customization_dialog (void)
   gtk_frame_set_label_widget (GTK_FRAME (frame2), label2);
   gtk_label_set_use_markup (GTK_LABEL (label2), TRUE);
 
-  dialog_action_area1 = gtk_dialog_get_action_area (GTK_DIALOG (tb_customization_dialog));
+  dialog_action_area1 = gtk_dialog_get_action_area (GTK_DIALOG (customization_dialog));
   gtk_widget_show (dialog_action_area1);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
 
   cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
   gtk_widget_show (cancelbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tb_customization_dialog), cancelbutton1, GTK_RESPONSE_CANCEL);
+  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), cancelbutton1, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancelbutton1, TRUE);
 
   okbutton1 = gtk_button_new_from_stock ("gtk-ok");
   gtk_widget_show (okbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tb_customization_dialog), okbutton1, GTK_RESPONSE_OK);
+  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), okbutton1, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(okbutton1, TRUE);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
-  GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, tb_customization_dialog, "tb_customization_dialog");
-  GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_main_vbox, "dialog_main_vbox");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox1, "hbox1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, frame1, "frame1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment1, "alignment1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, vbox1, "vbox1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, treeview_scrolled_window, "treeview_scrolled_window");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, tb_items_treeview, "tb_items_treeview");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, table1, "table1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_remove, "button_remove");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_down, "button_down");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_up, "button_up");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_change_icon, "button_change_icon");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment4, "alignment4");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, hbox3, "hbox3");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, image1, "image1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label4, "label4");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label1, "label1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, frame2, "frame2");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, alignment2, "alignment2");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, vbox2, "vbox2");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, scrolledwindow1, "scrolledwindow1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, actions_treeview, "actions_treeview");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, table2, "table2");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, button_add, "button_add");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, label2, "label2");
-  GLADE_HOOKUP_OBJECT_NO_REF (tb_customization_dialog, dialog_action_area1, "dialog_action_area1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, cancelbutton1, "cancelbutton1");
-  GLADE_HOOKUP_OBJECT (tb_customization_dialog, okbutton1, "okbutton1");
+  GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, customization_dialog, "customization_dialog");
+  GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, dialog_main_vbox, "dialog_main_vbox");
+  GLADE_HOOKUP_OBJECT (customization_dialog, hbox1, "hbox1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, frame1, "frame1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, alignment1, "alignment1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, vbox1, "vbox1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, treeview_scrolled_window, "treeview_scrolled_window");
+  GLADE_HOOKUP_OBJECT (customization_dialog, tb_items_treeview, "tb_items_treeview");
+  GLADE_HOOKUP_OBJECT (customization_dialog, table1, "table1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, button_remove, "button_remove");
+  GLADE_HOOKUP_OBJECT (customization_dialog, button_down, "button_down");
+  GLADE_HOOKUP_OBJECT (customization_dialog, button_up, "button_up");
+  GLADE_HOOKUP_OBJECT (customization_dialog, button_change_icon, "button_change_icon");
+  GLADE_HOOKUP_OBJECT (customization_dialog, alignment4, "alignment4");
+  GLADE_HOOKUP_OBJECT (customization_dialog, hbox3, "hbox3");
+  GLADE_HOOKUP_OBJECT (customization_dialog, image1, "image1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, label4, "label4");
+  GLADE_HOOKUP_OBJECT (customization_dialog, label1, "label1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, frame2, "frame2");
+  GLADE_HOOKUP_OBJECT (customization_dialog, alignment2, "alignment2");
+  GLADE_HOOKUP_OBJECT (customization_dialog, vbox2, "vbox2");
+  GLADE_HOOKUP_OBJECT (customization_dialog, scrolledwindow1, "scrolledwindow1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, actions_treeview, "actions_treeview");
+  GLADE_HOOKUP_OBJECT (customization_dialog, table2, "table2");
+  GLADE_HOOKUP_OBJECT (customization_dialog, button_add, "button_add");
+  GLADE_HOOKUP_OBJECT (customization_dialog, label2, "label2");
+  GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, dialog_action_area1, "dialog_action_area1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, cancelbutton1, "cancelbutton1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, okbutton1, "okbutton1");
 
-  return tb_customization_dialog;
+  return customization_dialog;
 }
 
 GtkWidget*
