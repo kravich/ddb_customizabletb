@@ -36,7 +36,7 @@ create_customization_dialog (void)
   GtkWidget *alignment1;
   GtkWidget *vbox1;
   GtkWidget *treeview_scrolled_window;
-  GtkWidget *tb_items_treeview;
+  GtkWidget *items_treeview;
   GtkWidget *table1;
   GtkWidget *button_remove;
   GtkWidget *button_down;
@@ -91,10 +91,10 @@ create_customization_dialog (void)
   gtk_box_pack_start (GTK_BOX (vbox1), treeview_scrolled_window, TRUE, TRUE, 0);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (treeview_scrolled_window), GTK_SHADOW_IN);
 
-  tb_items_treeview = gtk_tree_view_new ();
-  gtk_widget_show (tb_items_treeview);
-  gtk_container_add (GTK_CONTAINER (treeview_scrolled_window), tb_items_treeview);
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tb_items_treeview), FALSE);
+  items_treeview = gtk_tree_view_new ();
+  gtk_widget_show (items_treeview);
+  gtk_container_add (GTK_CONTAINER (treeview_scrolled_window), items_treeview);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (items_treeview), FALSE);
 
   table1 = gtk_table_new (2, 2, TRUE);
   gtk_widget_show (table1);
@@ -206,7 +206,7 @@ create_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (customization_dialog, alignment1, "alignment1");
   GLADE_HOOKUP_OBJECT (customization_dialog, vbox1, "vbox1");
   GLADE_HOOKUP_OBJECT (customization_dialog, treeview_scrolled_window, "treeview_scrolled_window");
-  GLADE_HOOKUP_OBJECT (customization_dialog, tb_items_treeview, "tb_items_treeview");
+  GLADE_HOOKUP_OBJECT (customization_dialog, items_treeview, "items_treeview");
   GLADE_HOOKUP_OBJECT (customization_dialog, table1, "table1");
   GLADE_HOOKUP_OBJECT (customization_dialog, button_remove, "button_remove");
   GLADE_HOOKUP_OBJECT (customization_dialog, button_down, "button_down");

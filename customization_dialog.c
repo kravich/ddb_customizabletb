@@ -330,7 +330,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     GtkWidget *d = GTK_WIDGET(user_data);
 
-    GtkWidget *items_treeview = lookup_widget(d, "tb_items_treeview");
+    GtkWidget *items_treeview = lookup_widget(d, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(d, "actions_treeview");
 
     assert(items_treeview != NULL);
@@ -518,7 +518,7 @@ void dialog_connect_signals(GtkWidget *dialog)
     GtkWidget *button_up = lookup_widget(dialog, "button_up");
     GtkWidget *button_down = lookup_widget(dialog, "button_down");
     GtkWidget *button_change_icon = lookup_widget(dialog, "button_change_icon");
-    GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
+    GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
 
     assert(button_add != NULL);
     assert(button_remove != NULL);
@@ -536,7 +536,7 @@ void dialog_connect_signals(GtkWidget *dialog)
 
 void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
 {
-    GtkWidget *items_treeview = lookup_widget(dialog, "tb_items_treeview");
+    GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
 
     assert(items_treeview != NULL);
