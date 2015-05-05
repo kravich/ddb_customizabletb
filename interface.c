@@ -31,7 +31,7 @@ create_customization_dialog (void)
 {
   GtkWidget *customization_dialog;
   GtkWidget *dialog_main_vbox;
-  GtkWidget *hbox1;
+  GtkWidget *hpaned1;
   GtkWidget *frame1;
   GtkWidget *alignment1;
   GtkWidget *vbox1;
@@ -61,20 +61,20 @@ create_customization_dialog (void)
 
   customization_dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (customization_dialog), "Customize toolbar");
-  gtk_window_set_default_size (GTK_WINDOW (customization_dialog), 300, 360);
+  gtk_window_set_default_size (GTK_WINDOW (customization_dialog), 640, 480);
   gtk_window_set_type_hint (GTK_WINDOW (customization_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_dialog_set_has_separator (GTK_DIALOG (customization_dialog), FALSE);
 
   dialog_main_vbox = gtk_dialog_get_content_area (GTK_DIALOG (customization_dialog));
   gtk_widget_show (dialog_main_vbox);
 
-  hbox1 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show (hbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_main_vbox), hbox1, TRUE, TRUE, 0);
+  hpaned1 = gtk_hpaned_new ();
+  gtk_widget_show (hpaned1);
+  gtk_box_pack_start (GTK_BOX (dialog_main_vbox), hpaned1, TRUE, TRUE, 0);
 
   frame1 = gtk_frame_new (NULL);
   gtk_widget_show (frame1);
-  gtk_box_pack_start (GTK_BOX (hbox1), frame1, FALSE, FALSE, 4);
+  gtk_paned_pack1 (GTK_PANED (hpaned1), frame1, TRUE, FALSE);
   gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
 
   alignment1 = gtk_alignment_new (0.5, 0.5, 1, 1);
@@ -147,7 +147,7 @@ create_customization_dialog (void)
 
   frame2 = gtk_frame_new (NULL);
   gtk_widget_show (frame2);
-  gtk_box_pack_start (GTK_BOX (hbox1), frame2, TRUE, TRUE, 4);
+  gtk_paned_pack2 (GTK_PANED (hpaned1), frame2, TRUE, FALSE);
   gtk_frame_set_shadow_type (GTK_FRAME (frame2), GTK_SHADOW_IN);
 
   alignment2 = gtk_alignment_new (0.5, 0.5, 1, 1);
@@ -201,7 +201,7 @@ create_customization_dialog (void)
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, customization_dialog, "customization_dialog");
   GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, dialog_main_vbox, "dialog_main_vbox");
-  GLADE_HOOKUP_OBJECT (customization_dialog, hbox1, "hbox1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, hpaned1, "hpaned1");
   GLADE_HOOKUP_OBJECT (customization_dialog, frame1, "frame1");
   GLADE_HOOKUP_OBJECT (customization_dialog, alignment1, "alignment1");
   GLADE_HOOKUP_OBJECT (customization_dialog, vbox1, "vbox1");

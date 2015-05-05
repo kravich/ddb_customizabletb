@@ -9,8 +9,8 @@
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
-  <property name="default_width">300</property>
-  <property name="default_height">360</property>
+  <property name="default_width">640</property>
+  <property name="default_height">480</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="decorated">True</property>
@@ -68,10 +68,9 @@
       </child>
 
       <child>
-	<widget class="GtkHBox" id="hbox1">
+	<widget class="GtkHPaned" id="hpaned1">
 	  <property name="visible">True</property>
-	  <property name="homogeneous">False</property>
-	  <property name="spacing">0</property>
+	  <property name="can_focus">True</property>
 
 	  <child>
 	    <widget class="GtkFrame" id="frame1">
@@ -310,9 +309,8 @@
 	      </child>
 	    </widget>
 	    <packing>
-	      <property name="padding">4</property>
-	      <property name="expand">False</property>
-	      <property name="fill">False</property>
+	      <property name="shrink">False</property>
+	      <property name="resize">True</property>
 	    </packing>
 	  </child>
 
@@ -434,9 +432,8 @@
 	      </child>
 	    </widget>
 	    <packing>
-	      <property name="padding">4</property>
-	      <property name="expand">True</property>
-	      <property name="fill">True</property>
+	      <property name="shrink">False</property>
+	      <property name="resize">True</property>
 	    </packing>
 	  </child>
 	</widget>
