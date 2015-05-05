@@ -197,22 +197,21 @@ void fill_toolbar(w_toolbar_t *toolbar)
 
         gtk_box_pack_start(hbox, button, FALSE, FALSE, 0);
 
-        GtkWidget *image = NULL;
-        if(current_item->action != NULL)
-        {
-            image = create_image_by_name(current_item->icon_name, TOOLBAR_ICON_SIZE);
-            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
-        }
-        else
-        {
-            image = create_image_by_name("process-stop", TOOLBAR_ICON_SIZE);
-            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_no_action_msg), NULL);
-        }
-
+        GtkWidget *image = create_image_by_name(current_item->icon_name, TOOLBAR_ICON_SIZE);
         assert(image != NULL);
 
         gtk_widget_show(image);
         gtk_container_add(GTK_CONTAINER(button), image);
+
+        if(current_item->action != NULL)
+        {
+            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
+        }
+        else
+        {
+            gtk_widget_set_sensitive(GTK_WIDGET(image), FALSE);
+            g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_no_action_msg), NULL);
+        }
 
         current_item = current_item->next;
     }

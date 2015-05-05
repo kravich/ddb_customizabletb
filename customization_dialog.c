@@ -70,12 +70,12 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
         if(current_item->action != NULL)
             action_title = current_item->action->title;
 
-        GdkPixbuf *icon = NULL;
+        GdkPixbuf *icon = create_pixbuf_by_icon_name(current_item->icon_name, 16);
 
-        if(current_item->action != NULL)
-            icon = create_pixbuf_by_icon_name(current_item->icon_name, 16);
-        else
-            icon = create_pixbuf_by_icon_name("process-stop", 16);
+        if(current_item->action == NULL)
+        {
+            // TODO: gray out icon here
+        }
 
         GtkTreeIter row_iter;
         gtk_list_store_append(items_list, &row_iter);
