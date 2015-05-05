@@ -170,7 +170,9 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 
 void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
 {
-    GtkWidget *msgbox = gtk_message_dialog_new(NULL,
+    GtkWindow *mainwin = GTK_WINDOW(gtkui->get_mainwin());
+
+    GtkWidget *msgbox = gtk_message_dialog_new(mainwin,
                                                GTK_DIALOG_MODAL,
                                                GTK_MESSAGE_ERROR,
                                                GTK_BUTTONS_OK,
@@ -258,7 +260,9 @@ void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
 
-    ToolbarItem *new_toolbar_items = run_customization_dialog(toolbar->items_list);
+    GtkWindow *mainwin = GTK_WINDOW(gtkui->get_mainwin());
+
+    ToolbarItem *new_toolbar_items = run_customization_dialog(mainwin, toolbar->items_list);
     if(new_toolbar_items != NULL)
         w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }

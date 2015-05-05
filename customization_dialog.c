@@ -478,10 +478,16 @@ void on_button_down_clicked(GtkButton *button, gpointer user_data)
 
 void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
 {
-    GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
-    GtkTreeModel *items_list_store = gtk_tree_view_get_model(items_treeview);
+    assert(GTK_IS_DIALOG(user_data));
 
-    GtkTreeSelection *items_selection = gtk_tree_view_get_selection(items_treeview);
+    GtkDialog *dialog = GTK_DIALOG(user_data);
+
+    GtkWidget *items_treeview = lookup_widget(GTK_WIDGET(dialog), "items_treeview");
+    assert(items_treeview != NULL);
+
+    GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
+
+    GtkTreeSelection *items_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(items_treeview));
 
     if(gtk_tree_selection_count_selected_rows(items_selection) != 1)
         return;
@@ -494,7 +500,7 @@ void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
                        ITEMS_COL_ICON_NAME, &icon_name,
                        -1);
 
-    char *new_icon_name = run_icon_selection_dialog(icon_name);
+    char *new_icon_name = run_icon_selection_dialog(GTK_WINDOW(dialog), icon_name);
     g_free(icon_name);
 
     if(new_icon_name != NULL)
@@ -531,7 +537,7 @@ void dialog_connect_signals(GtkWidget *dialog)
     g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
     g_signal_connect(button_up, "clicked", G_CALLBACK(on_button_up_clicked), items_treeview);
     g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
-    g_signal_connect(button_change_icon, "clicked", G_CALLBACK(on_button_change_icon_clicked), items_treeview);
+    g_signal_connect(button_change_icon, "clicked", G_CALLBACK(on_button_change_icon_clicked), dialog);
 }
 
 void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
@@ -551,9 +557,11 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
     dialog_connect_signals(dialog);
 }
 
-ToolbarItem* run_customization_dialog(ToolbarItem *current_toolbar_items)
+ToolbarItem* run_customization_dialog(GtkWindow *parent, ToolbarItem *current_toolbar_items)
 {
     GtkWidget *d = create_customization_dialog();
+
+    gtk_window_set_transient_for(GTK_WINDOW(d), parent);
 
     GtkListStore *items_list_store = create_items_list_store(current_toolbar_items);
     GtkTreeStore *actions_tree_store = create_actions_tree_store();

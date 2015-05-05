@@ -553,11 +553,13 @@ char* get_selected_icon(GtkIconView *iconview)
     return selected_icon_name;
 }
 
-char* run_icon_selection_dialog(const char *current_icon_name)
+char* run_icon_selection_dialog(GtkWindow *parent, const char *current_icon_name)
 {
     assert(current_icon_name != NULL);
 
     GtkWidget *d = create_icon_selection_dialog();
+
+    gtk_window_set_transient_for(GTK_WINDOW(d), parent);
 
     GtkWidget *iconview = lookup_widget(d, "iconview");
     assert(iconview != NULL);
