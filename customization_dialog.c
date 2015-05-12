@@ -21,6 +21,7 @@ enum
     ITEMS_COL_ACTION_NAME,
     ITEMS_COL_ACTION_CTX_ID,
     ITEMS_COL_ICON_NAME,
+    ITEMS_COL_WAS_ACTION_FOUND,
     ITEMS_COLS_NUM
 };
 
@@ -61,21 +62,22 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
                                                   G_TYPE_STRING,
                                                   G_TYPE_STRING,
                                                   G_TYPE_INT,
-                                                  G_TYPE_STRING);
+                                                  G_TYPE_STRING,
+                                                  G_TYPE_BOOLEAN);
 
     ToolbarItem *current_item = toolbar_items;
     while(current_item != NULL)
     {
         const char *action_title = current_item->action_name;
+        gboolean was_action_found = FALSE;
+
         if(current_item->action != NULL)
+        {
             action_title = current_item->action->title;
+            was_action_found = TRUE;
+        }
 
         GdkPixbuf *icon = create_pixbuf_by_icon_name(current_item->icon_name, 16);
-
-        if(current_item->action == NULL)
-        {
-            // TODO: gray out icon here
-        }
 
         GtkTreeIter row_iter;
         gtk_list_store_append(items_list, &row_iter);
@@ -87,6 +89,7 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
                            ITEMS_COL_ACTION_NAME, current_item->action_name,
                            ITEMS_COL_ACTION_CTX_ID, current_item->action_context,
                            ITEMS_COL_ICON_NAME, current_item->icon_name,
+                           ITEMS_COL_WAS_ACTION_FOUND, was_action_found,
                            -1);
 
         g_object_unref(icon);
@@ -260,6 +263,63 @@ GtkTreeStore* create_actions_tree_store()
     return actions_tree_store;
 }
 
+void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
+                        GtkCellRenderer *action_title_cell_renderer,
+                        GtkTreeModel *tree_model,
+                        GtkTreeIter *iter,
+                        gpointer data)
+{
+    GdkPixbuf *item_pixbuf = NULL;
+    gboolean was_action_found = FALSE;
+
+    gtk_tree_model_get(tree_model, iter, ITEMS_COL_ICON_PIXBUF,
+                                         &item_pixbuf,
+                                         ITEMS_COL_WAS_ACTION_FOUND,
+                                         &was_action_found,
+                                         -1);
+
+    g_object_set(action_title_cell_renderer, "pixbuf", item_pixbuf, NULL);
+    g_object_unref(item_pixbuf);
+
+    if(was_action_found)
+        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, TRUE);
+    else
+        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, FALSE);
+}
+
+void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
+                         GtkCellRenderer *action_title_cell_renderer,
+                         GtkTreeModel *tree_model,
+                         GtkTreeIter *iter,
+                         gpointer data)
+{
+    char *item_title = NULL;
+    gboolean was_action_found = FALSE;
+
+    gtk_tree_model_get(tree_model, iter, ITEMS_COL_ACTION_TITLE,
+                                         &item_title,
+                                         ITEMS_COL_WAS_ACTION_FOUND,
+                                         &was_action_found,
+                                         -1);
+
+    if(was_action_found)
+    {
+        g_object_set(action_title_cell_renderer, "text", item_title, NULL);
+        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, TRUE);
+    }
+    else
+    {
+        char buff[256];
+        snprintf(buff, 255, "Unknown action: %s", item_title);
+
+        g_object_set(action_title_cell_renderer, "text", buff, NULL);
+
+        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, FALSE);
+    }
+
+    g_free(item_title);
+}
+
 void init_items_treeview(GtkTreeView *items_treeview)
 {
     GtkTreeViewColumn *action_title_column = gtk_tree_view_column_new();
@@ -271,9 +331,10 @@ void init_items_treeview(GtkTreeView *items_treeview)
     gtk_tree_view_column_pack_start(action_title_column, action_title_renderer, TRUE);
     gtk_tree_view_column_pack_start(action_title_column, action_ctx_renderer, FALSE);
 
-    gtk_tree_view_column_add_attribute(action_title_column, icon_renderer, "pixbuf", ITEMS_COL_ICON_PIXBUF);
-    gtk_tree_view_column_add_attribute(action_title_column, action_title_renderer, "text", ITEMS_COL_ACTION_TITLE);
     gtk_tree_view_column_add_attribute(action_title_column, action_ctx_renderer, "text", ITEMS_COL_ACTION_CTX_NAME);
+
+    gtk_tree_view_column_set_cell_data_func(action_title_column, icon_renderer, ItemPixbufDataFunc, NULL, NULL);
+    gtk_tree_view_column_set_cell_data_func(action_title_column, action_title_renderer, ActionTitleDataFunc, NULL, NULL);
 
     gtk_tree_view_append_column(items_treeview, action_title_column);
 }
@@ -386,6 +447,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
                        ITEMS_COL_ICON_PIXBUF, new_item_icon,
                        ITEMS_COL_ACTION_CTX_NAME, get_context_name_by_id(action_ctx),
                        ITEMS_COL_ACTION_CTX_ID, action_ctx,
+                       ITEMS_COL_WAS_ACTION_FOUND, TRUE,
                        -1);
 
     g_free(action_name);
