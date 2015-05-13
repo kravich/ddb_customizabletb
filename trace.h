@@ -10,6 +10,6 @@
 #define TRACE_HEADER "[ddb_customizabletb_gtk2] "
 #endif
 
-#define trace(fmt,...) printf(TRACE_HEADER fmt, ##__VA_ARGS__)
+#define trace(fmt,...) fprintf(stderr, TRACE_HEADER fmt, ##__VA_ARGS__)
 
 #endif
