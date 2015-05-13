@@ -5,6 +5,7 @@
 #include <deadbeef/deadbeef.h>
 
 #include "w_toolbar.h"
+#include "trace.h"
 
 DB_functions_t *deadbeef = NULL;
 ddb_gtkui_t *gtkui = NULL;
@@ -17,9 +18,9 @@ static int toolbar_connect(void)
     if(gtkui == NULL)
     {
 #if GTK_CHECK_VERSION(3,0,0)
-        printf("Failed to connect to GTKUI(GTK3), deactivating\n");
+        trace("Failed to connect to GTKUI(GTK3), deactivating\n");
 #else
-        printf("Failed to connect to GTKUI(GTK2), deactivating\n");
+        trace("Failed to connect to GTKUI(GTK2), deactivating\n");
 #endif
         return -1;
     }

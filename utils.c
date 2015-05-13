@@ -3,6 +3,8 @@
 #include <glib.h>
 #include <assert.h>
 
+#include "trace.h"
+
 extern DB_functions_t *deadbeef;
 
 DB_plugin_action_t* find_action(const char *action_name)
@@ -44,7 +46,7 @@ GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px)
     }
     else
     {
-        printf("Current theme does not have icon %s\n", icon_name);
+        trace("Current theme does not have icon %s\n", icon_name);
         pixbuf = gtk_icon_theme_load_icon(default_icon_theme, "image-missing", icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error); // TODO: is it bulletproof or could also fail?
     }
 	

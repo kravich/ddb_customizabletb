@@ -10,6 +10,7 @@
 #include "toolbar_items.h"
 #include "utils.h"
 #include "icon_selection_dialog.h"
+#include "trace.h"
 
 extern DB_functions_t *deadbeef;
 
@@ -404,7 +405,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
     {
-        printf("No action is selected\n");
+        trace("No action is selected\n");
         return;
     }
 
@@ -422,7 +423,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     if(g_str_equal(action_name, ""))
     {
-        printf("Group entry is selected, can't add item\n");
+        trace("Group entry is selected, can't add item\n");
         g_free(action_name);
         return;
     }
@@ -430,7 +431,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     DB_plugin_action_t *action = find_action(action_name);
     if(action == NULL)
     {
-        printf("Can't find action for id %s\n", action_name);
+        trace("Can't find action for id %s\n", action_name);
         g_free(action_name);
         return;
     }

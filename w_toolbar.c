@@ -7,6 +7,7 @@
 #include "toolbar_items.h"
 #include "customization_dialog.h"
 #include "utils.h"
+#include "trace.h"
 
 #define TMP_BUFF_SIZE 256
 
@@ -62,7 +63,7 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
     GRegex *regex = g_regex_new("\\s*layout\\s*=\\s*\\\"(.*)\\\"\\s*", 0, 0, &error);
     if(error != NULL)
     {
-        printf("Failed to compile regex: %s\n", error->message);
+        trace("Failed to compile regex: %s\n", error->message);
         g_error_free(error);
         return;
     }
@@ -71,7 +72,7 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
 
     if(!g_regex_match(regex, params, 0, &match_info))
     {
-        printf("'layout' param was not found\n");
+        trace("'layout' param was not found\n");
         return;
     }
 
@@ -160,7 +161,7 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 
     assert(item->action != NULL);
 
-    printf("Activating \"%s\" in context %d\n", item->action_name, item->action_context);
+    trace("Activating \"%s\" in context %d\n", item->action_name, item->action_context);
 
     if(item->action->callback)
         activate_action_14(item->action, -1);
@@ -242,7 +243,7 @@ void empty_hbox(GtkBox *hbox)
 
 void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
 {
-    printf("Updating toolbar items\n");
+    trace("Updating toolbar items\n");
 
     if(new_toolbar_items == NULL)
         return;

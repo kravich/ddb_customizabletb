@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "support.h"
 #include "utils.h"
+#include "trace.h"
 
 enum
 {
@@ -481,7 +482,7 @@ GtkTreeModel* create_icons_list()
         }
         else
         {
-            printf("failed to create icon %s, skipping\n", icon_name);
+            trace("failed to create icon %s, skipping\n", icon_name);
         }
     }
 
