@@ -237,6 +237,9 @@ create_icon_selection_dialog (void)
 {
   GtkWidget *icon_selection_dialog;
   GtkWidget *dialog_vbox1;
+  GtkWidget *hbox4;
+  GtkWidget *scrolledwindow3;
+  GtkWidget *categories_treeview;
   GtkWidget *scrolledwindow2;
   GtkWidget *iconview;
   GtkWidget *dialog_action_area2;
@@ -252,9 +255,25 @@ create_icon_selection_dialog (void)
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (icon_selection_dialog));
   gtk_widget_show (dialog_vbox1);
 
+  hbox4 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_show (hbox4);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox4, TRUE, TRUE, 0);
+
+  scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (scrolledwindow3);
+  gtk_box_pack_start (GTK_BOX (hbox4), scrolledwindow3, FALSE, FALSE, 0);
+  gtk_widget_set_size_request (scrolledwindow3, 100, -1);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_SHADOW_IN);
+
+  categories_treeview = gtk_tree_view_new ();
+  gtk_widget_show (categories_treeview);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow3), categories_treeview);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (categories_treeview), FALSE);
+
   scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_show (scrolledwindow2);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), scrolledwindow2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox4), scrolledwindow2, TRUE, TRUE, 0);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_SHADOW_IN);
 
@@ -279,6 +298,9 @@ create_icon_selection_dialog (void)
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, icon_selection_dialog, "icon_selection_dialog");
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, dialog_vbox1, "dialog_vbox1");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, hbox4, "hbox4");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, scrolledwindow3, "scrolledwindow3");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, categories_treeview, "categories_treeview");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, scrolledwindow2, "scrolledwindow2");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, iconview, "iconview");
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, dialog_action_area2, "dialog_action_area2");
