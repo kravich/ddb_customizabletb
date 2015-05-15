@@ -622,19 +622,19 @@ GtkTreeModel* create_categories_list_store()
     return GTK_TREE_MODEL(categories_list);
 }
 
-void on_categories_treeview_cursor_changed(GtkTreeView *categories_treeview, gpointer user_data)
+void on_categories_selection_changed(GtkTreeSelection *categories_selection, gpointer user_data)
 {
     GtkIconView *iconview = GTK_ICON_VIEW(user_data);
 
-    GtkTreeSelection *selection = gtk_tree_view_get_selection(categories_treeview);
-
-    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+    if(gtk_tree_selection_count_selected_rows(categories_selection) != 1)
+    {
+        gtk_icon_view_set_model(iconview, NULL);
         return;
+    }
 
-    GtkTreeModel *categories_list = gtk_tree_view_get_model(categories_treeview);
-
+    GtkTreeModel *categories_list = NULL;
     GtkTreeIter iter;
-    gtk_tree_selection_get_selected(selection, &categories_list, &iter);
+    gtk_tree_selection_get_selected(categories_selection, &categories_list, &iter);
 
     GtkTreeModel *icons_list = NULL;
 
@@ -691,7 +691,8 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
     gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
 
     // connect category change handler
-    g_signal_connect(categories_treeview, "cursor-changed", G_CALLBACK(on_categories_treeview_cursor_changed), iconview);
+    GtkTreeSelection *categories_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(categories_treeview));
+    g_signal_connect(categories_selection, "changed", G_CALLBACK(on_categories_selection_changed), iconview);
 
     // connect icon selection handler
     g_signal_connect(iconview, "selection-changed", G_CALLBACK(on_iconview_selection_changed), dialog);
