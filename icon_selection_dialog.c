@@ -647,10 +647,32 @@ void on_categories_treeview_cursor_changed(GtkTreeView *categories_treeview, gpo
     g_object_unref(icons_list);
 }
 
+void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_data)
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
+
+    assert(ok_button != NULL);
+
+    GList *selected_items = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(iconview));
+
+    gboolean single_item_selected = FALSE;
+    if(selected_items != NULL && selected_items->next == NULL)
+        single_item_selected = TRUE;
+
+    g_list_free_full(selected_items, (GDestroyNotify)gtk_tree_path_free);
+
+    if(single_item_selected)
+        gtk_widget_set_sensitive(ok_button, TRUE);
+    else
+        gtk_widget_set_sensitive(ok_button, FALSE);
+}
+
 void setup_icon_selection_dialog(GtkWidget *dialog)
 {
     GtkWidget *categories_treeview = lookup_widget(dialog, "categories_treeview");
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
+    GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
 
     assert(categories_treeview != NULL);
     assert(iconview != NULL);
@@ -664,16 +686,21 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(categories_treeview), category_name_col);
 
-    GtkTreeModel *categories_list = create_categories_list_store();
-    gtk_tree_view_set_model(GTK_TREE_VIEW(categories_treeview), categories_list);
-
     // setup list of icons
     gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconview), ICONS_COL_PIXBUF);
     gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
 
-    // connect handler
+    // connect category change handler
     g_signal_connect(categories_treeview, "cursor-changed", G_CALLBACK(on_categories_treeview_cursor_changed), iconview);
 
+    // connect icon selection handler
+    g_signal_connect(iconview, "selection-changed", G_CALLBACK(on_iconview_selection_changed), dialog);
+
+    // make ok button insensitive by default
+    gtk_widget_set_sensitive(ok_button, FALSE);
+
+    GtkTreeModel *categories_list = create_categories_list_store();
+    gtk_tree_view_set_model(GTK_TREE_VIEW(categories_treeview), categories_list);
     g_object_unref(categories_list);
 }
 

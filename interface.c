@@ -56,8 +56,8 @@ create_customization_dialog (void)
   GtkWidget *button_add;
   GtkWidget *label2;
   GtkWidget *dialog_action_area1;
-  GtkWidget *cancelbutton1;
-  GtkWidget *okbutton1;
+  GtkWidget *cancel_button;
+  GtkWidget *ok_button;
 
   customization_dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (customization_dialog), "Customize toolbar");
@@ -188,15 +188,15 @@ create_customization_dialog (void)
   gtk_widget_show (dialog_action_area1);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
 
-  cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (cancelbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), cancelbutton1, GTK_RESPONSE_CANCEL);
-  gtk_widget_set_can_default(cancelbutton1, TRUE);
+  cancel_button = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (cancel_button);
+  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), cancel_button, GTK_RESPONSE_CANCEL);
+  gtk_widget_set_can_default(cancel_button, TRUE);
 
-  okbutton1 = gtk_button_new_from_stock ("gtk-ok");
-  gtk_widget_show (okbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), okbutton1, GTK_RESPONSE_OK);
-  gtk_widget_set_can_default(okbutton1, TRUE);
+  ok_button = gtk_button_new_from_stock ("gtk-ok");
+  gtk_widget_show (ok_button);
+  gtk_dialog_add_action_widget (GTK_DIALOG (customization_dialog), ok_button, GTK_RESPONSE_OK);
+  gtk_widget_set_can_default(ok_button, TRUE);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, customization_dialog, "customization_dialog");
@@ -226,8 +226,8 @@ create_customization_dialog (void)
   GLADE_HOOKUP_OBJECT (customization_dialog, button_add, "button_add");
   GLADE_HOOKUP_OBJECT (customization_dialog, label2, "label2");
   GLADE_HOOKUP_OBJECT_NO_REF (customization_dialog, dialog_action_area1, "dialog_action_area1");
-  GLADE_HOOKUP_OBJECT (customization_dialog, cancelbutton1, "cancelbutton1");
-  GLADE_HOOKUP_OBJECT (customization_dialog, okbutton1, "okbutton1");
+  GLADE_HOOKUP_OBJECT (customization_dialog, cancel_button, "cancel_button");
+  GLADE_HOOKUP_OBJECT (customization_dialog, ok_button, "ok_button");
 
   return customization_dialog;
 }
@@ -243,12 +243,12 @@ create_icon_selection_dialog (void)
   GtkWidget *scrolledwindow2;
   GtkWidget *iconview;
   GtkWidget *dialog_action_area2;
-  GtkWidget *cancelbutton2;
-  GtkWidget *okbutton2;
+  GtkWidget *cancel_button;
+  GtkWidget *ok_button;
 
   icon_selection_dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (icon_selection_dialog), "Select icon");
-  gtk_window_set_default_size (GTK_WINDOW (icon_selection_dialog), 400, 360);
+  gtk_window_set_default_size (GTK_WINDOW (icon_selection_dialog), 540, 420);
   gtk_window_set_type_hint (GTK_WINDOW (icon_selection_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_dialog_set_has_separator (GTK_DIALOG (icon_selection_dialog), FALSE);
 
@@ -262,7 +262,7 @@ create_icon_selection_dialog (void)
   scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_show (scrolledwindow3);
   gtk_box_pack_start (GTK_BOX (hbox4), scrolledwindow3, FALSE, FALSE, 0);
-  gtk_widget_set_size_request (scrolledwindow3, 100, -1);
+  gtk_widget_set_size_request (scrolledwindow3, 140, -1);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_SHADOW_IN);
 
@@ -285,15 +285,15 @@ create_icon_selection_dialog (void)
   gtk_widget_show (dialog_action_area2);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area2), GTK_BUTTONBOX_END);
 
-  cancelbutton2 = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (cancelbutton2);
-  gtk_dialog_add_action_widget (GTK_DIALOG (icon_selection_dialog), cancelbutton2, GTK_RESPONSE_CANCEL);
-  gtk_widget_set_can_default(cancelbutton2, TRUE);
+  cancel_button = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (cancel_button);
+  gtk_dialog_add_action_widget (GTK_DIALOG (icon_selection_dialog), cancel_button, GTK_RESPONSE_CANCEL);
+  gtk_widget_set_can_default(cancel_button, TRUE);
 
-  okbutton2 = gtk_button_new_from_stock ("gtk-ok");
-  gtk_widget_show (okbutton2);
-  gtk_dialog_add_action_widget (GTK_DIALOG (icon_selection_dialog), okbutton2, GTK_RESPONSE_OK);
-  gtk_widget_set_can_default(okbutton2, TRUE);
+  ok_button = gtk_button_new_from_stock ("gtk-ok");
+  gtk_widget_show (ok_button);
+  gtk_dialog_add_action_widget (GTK_DIALOG (icon_selection_dialog), ok_button, GTK_RESPONSE_OK);
+  gtk_widget_set_can_default(ok_button, TRUE);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, icon_selection_dialog, "icon_selection_dialog");
@@ -304,8 +304,8 @@ create_icon_selection_dialog (void)
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, scrolledwindow2, "scrolledwindow2");
   GLADE_HOOKUP_OBJECT (icon_selection_dialog, iconview, "iconview");
   GLADE_HOOKUP_OBJECT_NO_REF (icon_selection_dialog, dialog_action_area2, "dialog_action_area2");
-  GLADE_HOOKUP_OBJECT (icon_selection_dialog, cancelbutton2, "cancelbutton2");
-  GLADE_HOOKUP_OBJECT (icon_selection_dialog, okbutton2, "okbutton2");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, cancel_button, "cancel_button");
+  GLADE_HOOKUP_OBJECT (icon_selection_dialog, ok_button, "ok_button");
 
   return icon_selection_dialog;
 }

@@ -580,6 +580,65 @@ void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     }
 }
 
+void on_items_selection_changed(GtkTreeSelection *items_selection, gpointer user_data)
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    GtkWidget *button_up = lookup_widget(dialog, "button_up");
+    GtkWidget *button_down = lookup_widget(dialog, "button_down");
+    GtkWidget *button_remove = lookup_widget(dialog, "button_remove");
+    GtkWidget *button_change_icon = lookup_widget(dialog, "button_change_icon");
+
+    assert(button_up != NULL);
+    assert(button_down != NULL);
+    assert(button_remove != NULL);
+    assert(button_change_icon != NULL);
+
+    if(gtk_tree_selection_count_selected_rows(items_selection) == 1)
+    {
+        gtk_widget_set_sensitive(button_up, TRUE);
+        gtk_widget_set_sensitive(button_down, TRUE);
+        gtk_widget_set_sensitive(button_remove, TRUE);
+        gtk_widget_set_sensitive(button_change_icon, TRUE);
+    }
+    else
+    {
+        gtk_widget_set_sensitive(button_up, FALSE);
+        gtk_widget_set_sensitive(button_down, FALSE);
+        gtk_widget_set_sensitive(button_remove, FALSE);
+        gtk_widget_set_sensitive(button_change_icon, FALSE);
+    }
+}
+
+void on_actions_selection_changed(GtkTreeSelection *actions_selection, gpointer user_data)
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    GtkWidget *button_add = lookup_widget(dialog, "button_add");
+
+    assert(button_add != NULL);
+
+    if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
+    {
+        gtk_widget_set_sensitive(button_add, FALSE);
+        return;
+    }
+
+    GtkTreeModel *actions_tree_store = NULL;
+    GtkTreeIter iter;
+
+    gtk_tree_selection_get_selected(actions_selection, &actions_tree_store, &iter);
+
+    char *action_name = NULL;
+
+    gtk_tree_model_get(actions_tree_store, &iter, ACTIONS_COL_NAME, &action_name, -1);
+
+    if(g_str_equal(action_name, ""))
+        gtk_widget_set_sensitive(button_add, FALSE);
+    else
+        gtk_widget_set_sensitive(button_add, TRUE);
+
+    g_free(action_name);
+}
+
 void dialog_connect_signals(GtkWidget *dialog)
 {
     GtkWidget *button_add = lookup_widget(dialog, "button_add");
@@ -588,6 +647,7 @@ void dialog_connect_signals(GtkWidget *dialog)
     GtkWidget *button_down = lookup_widget(dialog, "button_down");
     GtkWidget *button_change_icon = lookup_widget(dialog, "button_change_icon");
     GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
+    GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
 
     assert(button_add != NULL);
     assert(button_remove != NULL);
@@ -595,12 +655,43 @@ void dialog_connect_signals(GtkWidget *dialog)
     assert(button_down != NULL);
     assert(button_change_icon != NULL);
     assert(items_treeview != NULL);
+    assert(actions_treeview != NULL);
 
     g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), dialog);
     g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
     g_signal_connect(button_up, "clicked", G_CALLBACK(on_button_up_clicked), items_treeview);
     g_signal_connect(button_down, "clicked", G_CALLBACK(on_button_down_clicked), items_treeview);
     g_signal_connect(button_change_icon, "clicked", G_CALLBACK(on_button_change_icon_clicked), dialog);
+
+    GtkTreeSelection *items_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(items_treeview));
+    GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
+
+    g_signal_connect(items_selection, "changed", G_CALLBACK(on_items_selection_changed), dialog);
+    g_signal_connect(actions_selection, "changed", G_CALLBACK(on_actions_selection_changed), dialog);
+}
+
+void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
+{
+    GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
+    assert(ok_button != NULL);
+
+    GtkTreeIter iter;
+    if(gtk_tree_model_get_iter_first(items_list, &iter) == TRUE)
+        gtk_widget_set_sensitive(ok_button, TRUE);
+    else
+        gtk_widget_set_sensitive(ok_button, FALSE);
+}
+
+void on_items_list_row_deleted(GtkTreeModel *items_list, GtkTreePath *path, gpointer user_data)
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    update_ok_button_state(items_list, dialog);
+}
+
+void on_items_list_row_inserted(GtkTreeModel *items_list, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data)
+{
+    GtkWidget *dialog = GTK_WIDGET(user_data);
+    update_ok_button_state(items_list, dialog);
 }
 
 void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
@@ -618,6 +709,11 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
     gtk_tree_view_set_model(GTK_TREE_VIEW(actions_treeview), GTK_TREE_MODEL(actions_tree_store));
 
     dialog_connect_signals(dialog);
+
+    // connect handler to items list to be able catch situation when all items
+    // are deleted and Ok button should be disabled
+    g_signal_connect(items_list_store, "row-deleted", G_CALLBACK(on_items_list_row_deleted), dialog);
+    g_signal_connect(items_list_store, "row-inserted", G_CALLBACK(on_items_list_row_inserted), dialog);
 }
 
 ToolbarItem* run_customization_dialog(GtkWindow *parent, ToolbarItem *current_toolbar_items)
