@@ -10,12 +10,19 @@
 
 enum
 {
+    CATEGORIES_COL_NAME,
+    CATEGORIES_COL_ICONVIEW_MODEL,
+    CATEGORIES_COLS_NUM
+};
+
+enum
+{
     ICONS_COL_PIXBUF,
     ICONS_COL_NAME,
     ICONS_COLS_NUM
 };
 
-const char* icons_list[] =
+const char* volume_icons[] =
 {
     "audio-volume-high",
     "audio-volume-low",
@@ -25,6 +32,11 @@ const char* icons_list[] =
     "microphone-sensitivity-low",
     "microphone-sensitivity-medium",
     "microphone-sensitivity-muted",
+    NULL
+};
+
+const char* multimedia_icons[] =
+{
     "media-playlist-repeat",
     "media-playlist-repeat-song",
     "media-playlist-shuffle",
@@ -39,12 +51,21 @@ const char* icons_list[] =
     "media-eject",
     "media-record",
     "media-view-subtitles",
+    NULL
+};
+
+const char* network_icons[] =
+{
     "network-transmit-receive",
     "network-transmit",
     "network-receive",
     "network-idle",
     "network-error",
     "network-offline",
+};
+
+const char* weather_icons[] =
+{
     "weather-clear",
     "weather-clear-night",
     "weather-few-clouds",
@@ -56,6 +77,11 @@ const char* icons_list[] =
     "weather-showers-scattered",
     "weather-snow",
     "weather-storm",
+    NULL
+};
+
+const char* navigation_icons[] =
+{
     "go-first",
     "go-previous",
     "go-next",
@@ -66,6 +92,11 @@ const char* icons_list[] =
     "go-top",
     "go-home",
     "go-jump",
+    NULL
+};
+
+const char* editing_icons[] =
+{
     "format-indent-less",
     "format-indent-more",
     "format-justify-center",
@@ -108,6 +139,11 @@ const char* icons_list[] =
     "insert-object",
     "insert-text",
     "accessories-text-editor",
+    NULL
+};
+
+const char* view_constols_icons[] =
+{
     "view-list",
     "view-grid",
     "view-fullscreen",
@@ -120,11 +156,21 @@ const char* icons_list[] =
     "view-paged",
     "view-dual",
     "view-wrapped",
+    NULL
+};
+
+const char* calendar_icons[] =
+{
     "task-due",
     "task-past-due",
     "appointment-soon",
     "appointment-missed",
     "alarm",
+    NULL
+};
+
+const char* communication_icons[] =
+{
     "mail-unread",
     "mail-read",
     "mail-replied",
@@ -142,6 +188,11 @@ const char* icons_list[] =
     "user-busy",
     "user-away",
     "user-status-pending",
+    NULL
+};
+
+const char* devices_and_media_icons[] =
+{
     "audio-input-microphone",
     "camera-web",
     "camera-photo",
@@ -172,6 +223,11 @@ const char* icons_list[] =
     "network-wired",
     "media-floppy",
     "media-flash",
+    NULL
+};
+
+const char* content_types_icons[] =
+{
     "application-certificate",
     "application-rss+xml",
     "application-x-appliance",
@@ -180,6 +236,11 @@ const char* icons_list[] =
     "text-x-generic",
     "video-x-generic",
     "x-office-calendar",
+    NULL
+};
+
+const char* emotes_icons[] =
+{
     "face-angel",
     "face-angry",
     "face-cool",
@@ -203,6 +264,11 @@ const char* icons_list[] =
     "face-wink",
     "face-worried",
     "face-yawn",
+    NULL
+};
+
+const char* general_icons[] =
+{
     "edit-find",
     "content-loading",
     "open-menu",
@@ -243,6 +309,11 @@ const char* icons_list[] =
     "emblem-shared",
     "folder-download",
     "help-browser",
+    NULL
+};
+
+const char* other_icons[] =
+{
     "view-sort-ascending",
     "view-sort-descending",
     "document-revert",
@@ -458,100 +529,179 @@ const char* icons_list[] =
     "touchpad-disabled",
     "trophy-bronze",
     "trophy-silver",
-    "trophy-gold"
+    "trophy-gold",
+    NULL
 };
 
-const int icons_list_size = sizeof(icons_list) / sizeof(icons_list[0]);
-
-GtkTreeModel* create_icons_list()
+typedef struct
 {
-    GtkListStore *list = gtk_list_store_new(ICONS_COLS_NUM, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+    const char* context_name;
+    const char** icon_names_arr;
+} ContextRecord;
 
-    for(int i = 0; i < icons_list_size; i++)
+ContextRecord contexes[] =
+{
+    { "Volume", volume_icons },
+    { "Multimedia", multimedia_icons },
+    { "Network", network_icons },
+    { "Weather", weather_icons },
+    { "Navigation", navigation_icons },
+    { "Editing", editing_icons },
+    { "View Controls", view_constols_icons },
+    { "Calendar", calendar_icons },
+    { "Communication", communication_icons },
+    { "Devices and Media", devices_and_media_icons },
+    { "Content Types", content_types_icons },
+    { "Emotes", emotes_icons },
+    { "General", general_icons },
+    { "Other", other_icons },
+    { NULL, NULL }
+};
+
+GtkTreeModel* create_categories_list_store()
+{
+    GtkListStore *categories_list = gtk_list_store_new(CATEGORIES_COLS_NUM, G_TYPE_STRING, G_TYPE_OBJECT);
+
+    GtkIconTheme *default_icon_theme = gtk_icon_theme_get_default();
+
+    ContextRecord *current_context = contexes;
+    while(current_context->context_name != NULL)
     {
-        const char *icon_name = icons_list[i];
+        GtkListStore *icons_list = gtk_list_store_new(ICONS_COLS_NUM, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 
-        GdkPixbuf *icon = create_pixbuf_by_icon_name(icon_name, 24);
-        if(icon != NULL)
+        const char **current_icon_name_ptr = current_context->icon_names_arr;
+        while(*current_icon_name_ptr != NULL)
         {
-            GtkTreeIter iter;
-            gtk_list_store_append(list, &iter);
-            gtk_list_store_set(list, &iter, ICONS_COL_PIXBUF, icon, ICONS_COL_NAME, icon_name, -1);
+            const char *icon_name = *current_icon_name_ptr;
+
+            if(gtk_icon_theme_has_icon(default_icon_theme, icon_name) == FALSE)
+            {
+                current_icon_name_ptr++;
+                continue;
+            }
+
+            GError *error = NULL;
+            GdkPixbuf *icon = gtk_icon_theme_load_icon(default_icon_theme,
+                                                       icon_name,
+                                                       24,
+                                                       GTK_ICON_LOOKUP_FORCE_SIZE,
+                                                       &error);
+
+            if(error != NULL)
+            {
+                trace("Failed to create icon %s: %s\n", icon_name, error->message);
+                g_error_free(error);
+                current_icon_name_ptr++;
+                continue;
+            }
+
+            gtk_list_store_insert_with_values(icons_list,
+                                              NULL,
+                                              -1,
+                                              ICONS_COL_PIXBUF, icon,
+                                              ICONS_COL_NAME, icon_name,
+                                              -1);
 
             g_object_unref(icon);
+
+            current_icon_name_ptr++;
         }
-        else
-        {
-            trace("failed to create icon %s, skipping\n", icon_name);
-        }
+
+        gtk_list_store_insert_with_values(categories_list,
+                                          NULL,
+                                          -1,
+                                          CATEGORIES_COL_NAME, current_context->context_name,
+                                          CATEGORIES_COL_ICONVIEW_MODEL, icons_list,
+                                          -1);
+
+        g_object_unref(icons_list);
+
+        current_context++;
     }
 
-    return GTK_TREE_MODEL(list);
+    return GTK_TREE_MODEL(categories_list);
 }
 
-GtkTreePath* icons_list_find(GtkTreeModel *icons_list, const char *icon_name_to_find)
+void on_categories_treeview_cursor_changed(GtkTreeView *categories_treeview, gpointer user_data)
 {
-    GtkTreePath *path = NULL;
-    GtkTreeIter row_iter;
+    GtkIconView *iconview = GTK_ICON_VIEW(user_data);
 
-    gboolean res = gtk_tree_model_get_iter_first(icons_list, &row_iter);
-    while(res == TRUE)
-    {
-        char *curr_icon_name = NULL;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(categories_treeview);
 
-        gtk_tree_model_get(icons_list, &row_iter, ICONS_COL_NAME, &curr_icon_name, -1);
+    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+        return;
 
-        if(g_str_equal(curr_icon_name, icon_name_to_find))
-        {
-            path = gtk_tree_model_get_path(icons_list, &row_iter);
-            g_free(curr_icon_name);
-            break;
-        }
+    GtkTreeModel *categories_list = gtk_tree_view_get_model(categories_treeview);
 
-        g_free(curr_icon_name);
+    GtkTreeIter iter;
+    gtk_tree_selection_get_selected(selection, &categories_list, &iter);
 
-        res = gtk_tree_model_iter_next(icons_list, &row_iter);
-    }
+    GtkTreeModel *icons_list = NULL;
 
-    return path;
-}
+    gtk_tree_model_get(categories_list, &iter, CATEGORIES_COL_ICONVIEW_MODEL, &icons_list, -1);
 
-void select_icon(GtkIconView *iconview, const char *icon_name)
-{
-    GtkTreeModel *icons_list = gtk_icon_view_get_model(iconview);
     assert(icons_list != NULL);
 
-    GtkTreePath *path = icons_list_find(icons_list, icon_name);
+    gtk_icon_view_set_model(iconview, icons_list);
 
-    if(path != NULL)
-    {
-        gtk_icon_view_select_path(iconview, path);
-        gtk_tree_path_free(path);
-    }
+    g_object_unref(icons_list);
 }
 
-char* get_selected_icon(GtkIconView *iconview)
+void setup_icon_selection_dialog(GtkWidget *dialog)
 {
-    GtkTreeModel *icons_list = gtk_icon_view_get_model(iconview);
-    assert(icons_list != NULL);
+    GtkWidget *categories_treeview = lookup_widget(dialog, "categories_treeview");
+    GtkWidget *iconview = lookup_widget(dialog, "iconview");
 
-    GList *selected_items = gtk_icon_view_get_selected_items(iconview);
+    assert(categories_treeview != NULL);
+    assert(iconview != NULL);
 
-    if(selected_items == NULL)
+    // setup list of categories
+    GtkTreeViewColumn *category_name_col = gtk_tree_view_column_new();
+    GtkCellRenderer *category_name_renderer = gtk_cell_renderer_text_new();
+
+    gtk_tree_view_column_pack_start(category_name_col, category_name_renderer, TRUE);
+    gtk_tree_view_column_add_attribute(category_name_col, category_name_renderer, "text", CATEGORIES_COL_NAME);
+
+    gtk_tree_view_append_column(GTK_TREE_VIEW(categories_treeview), category_name_col);
+
+    GtkTreeModel *categories_list = create_categories_list_store();
+    gtk_tree_view_set_model(GTK_TREE_VIEW(categories_treeview), categories_list);
+
+    // setup list of icons
+    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconview), ICONS_COL_PIXBUF);
+    gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
+
+    // connect handler
+    g_signal_connect(categories_treeview, "cursor-changed", G_CALLBACK(on_categories_treeview_cursor_changed), iconview);
+
+    g_object_unref(categories_list);
+}
+
+char* get_selected_icon(GtkWidget *dialog)
+{
+    GtkWidget *iconview = lookup_widget(dialog, "iconview");
+    assert(iconview != NULL);
+
+    GtkTreeModel *icons_list = gtk_icon_view_get_model(GTK_ICON_VIEW(iconview));
+
+    GList *selected_list = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(iconview));
+
+    if(selected_list  == NULL)
         return NULL;
 
-    GtkTreeIter curr_iter;
+    GtkTreePath *selected_path = (GtkTreePath*)(selected_list->data);
 
-    GtkTreePath *first_selected_path = (GtkTreePath*)(selected_items->data);
-    gtk_tree_model_get_iter(icons_list, &curr_iter, first_selected_path);
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter(icons_list, &iter, selected_path);
 
-    g_list_free_full(selected_items, (GDestroyNotify)gtk_tree_path_free);
+    g_list_free_full(selected_list, (GDestroyNotify)gtk_tree_path_free);
 
-    char *selected_icon_name = NULL;
+    char *icon_name = NULL;
+    gtk_tree_model_get(icons_list, &iter, ICONS_COL_NAME, &icon_name, -1);
 
-    gtk_tree_model_get(icons_list, &curr_iter, ICONS_COL_NAME, &selected_icon_name, -1);
+    assert(icon_name != NULL);
 
-    return selected_icon_name;
+    return icon_name;
 }
 
 char* run_icon_selection_dialog(GtkWindow *parent, const char *current_icon_name)
@@ -562,22 +712,14 @@ char* run_icon_selection_dialog(GtkWindow *parent, const char *current_icon_name
 
     gtk_window_set_transient_for(GTK_WINDOW(d), parent);
 
-    GtkWidget *iconview = lookup_widget(d, "iconview");
-    assert(iconview != NULL);
-
-    GtkTreeModel *icons_list = create_icons_list();
-    gtk_icon_view_set_model(GTK_ICON_VIEW(iconview), icons_list);
-    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconview), ICONS_COL_PIXBUF);
-    gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
-
-    select_icon(GTK_ICON_VIEW(iconview), current_icon_name);
+    setup_icon_selection_dialog(d);
 
     char *new_icon_name = NULL;
 
     gint res = gtk_dialog_run(GTK_DIALOG(d));
     if(res == GTK_RESPONSE_OK)
     {
-        new_icon_name = get_selected_icon(GTK_ICON_VIEW(iconview));
+        new_icon_name = get_selected_icon(d);
     }
 
     gtk_widget_destroy(d);
