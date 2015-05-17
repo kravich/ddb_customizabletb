@@ -73,10 +73,10 @@ gtk3: $(TARGET_GTK3)
 	$(CC) -c -o $@ $< $(CFLAGS) $(GTK3_INCLUDE_DIRS)
 
 $(TARGET_GTK2): $(OBJS_GTK2)
-	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK2_LIBS)
+	$(CC) --shared -o $@ $^ $(CFLAGS) $(LDFLAGS) $(GTK2_LIBS)
 
 $(TARGET_GTK3): $(OBJS_GTK3)
-	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK3_LIBS)
+	$(CC) --shared -o $@ $^ $(CFLAGS) $(LDFLAGS) $(GTK3_LIBS)
 
 clean:
 	rm -f $(TARGET_GTK2) $(TARGET_GTK3) $(OBJS_GTK2) $(OBJS_GTK3)
