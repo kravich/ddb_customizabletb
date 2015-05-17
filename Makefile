@@ -21,7 +21,7 @@
 
 CC = gcc
 
-CFLAGS = -std=c99 -fPIC -Wall -Werror -Wfatal-errors
+CFLAGS += -std=c99 -fPIC -Wall -Werror -Wfatal-errors
 CFLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=unused-function
 #CFLAGS += -O2
 CFLAGS += -g -Wno-deprecated-declarations
@@ -31,6 +31,9 @@ GTK2_LIBS = $(shell pkg-config --libs gtk+-2.0)
 
 GTK3_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3_LIBS = $(shell pkg-config --libs gtk+-3.0)
+
+LDFLAGS +=
+
 
 # prepare lists of .c and .h files
 INPUT_FILES = \
@@ -70,10 +73,10 @@ gtk3: $(TARGET_GTK3)
 	$(CC) -c -o $@ $< $(CFLAGS) $(GTK3_INCLUDE_DIRS)
 
 $(TARGET_GTK2): $(OBJS_GTK2)
-	$(CC) --shared -o $@ $^ $(GTK2_LIBS)
+	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK2_LIBS)
 
 $(TARGET_GTK3): $(OBJS_GTK3)
-	$(CC) --shared -o $@ $^ $(GTK3_LIBS)
+	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK3_LIBS)
 
 clean:
 	rm -f $(TARGET_GTK2) $(TARGET_GTK3) $(OBJS_GTK2) $(OBJS_GTK3)
