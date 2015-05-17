@@ -73,10 +73,6 @@ static DB_misc_t toolbar_plugin =
     .plugin.name = "Customizable toolbar for GTKUI(GTK2)",
 #endif
 
-    .plugin.descr = "",
-    .plugin.copyright = "kravich",
-    .plugin.website = "",
-
     .plugin.command = NULL,
 
     .plugin.start = NULL,
@@ -91,7 +87,34 @@ static DB_misc_t toolbar_plugin =
 
     .plugin.message = NULL,
 
-    .plugin.configdialog = NULL
+    .plugin.configdialog = NULL,
+
+    .plugin.descr =
+        "This plugin implements customizable toolbar widget that could be used\n"
+        "instead of deadbeef's default fixed toolbar.\n"
+        "Use deadbeef's layout design mode (View->Design Mode) to add toolbar\n"
+        "widget to layout.\n"
+        "To customize toolbar, while being in design mode, click with right mouse\n"
+        "button on a toolbar widget and select \"Customize\"\n",
+
+    .plugin.copyright =
+        "ddb_customizabletb - Customizable toolbar plugin for DeaDBeeF Music player\n"
+        "Copyright (C) 2015 Evgeny Kravchenko <cravchik@yandex.ru>\n"
+        "\n"
+        "This program is free software: you can redistribute it and/or modify\n"
+        "it under the terms of the GNU General Public License as published by\n"
+        "the Free Software Foundation, either version 3 of the License, or\n"
+        "(at your option) any later version.\n"
+        "\n"
+        "This program is distributed in the hope that it will be useful,\n"
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+        "GNU General Public License for more details.\n"
+        "\n"
+        "You should have received a copy of the GNU General Public License\n"
+        "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n",
+
+    .plugin.website = "https://github.com/kravich/ddb_customizabletb"
 };
 
 #if GTK_CHECK_VERSION(3,0,0)
