@@ -93,7 +93,7 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
     if(!g_regex_match(regex, params, 0, &match_info))
     {
         trace("'layout' param was not found\n");
-        g_regex_unref(regex);`
+        g_regex_unref(regex);
         return;
     }
 
