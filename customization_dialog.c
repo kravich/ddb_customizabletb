@@ -54,12 +54,6 @@ enum
     ACTIONS_COLS_NUM
 };
 
-enum
-{
-    CONTEXT_COL_NAME,
-    CONTEXT_COL_ID
-};
-
 const char* get_context_name_by_id(int context)
 {
     assert(context >= 0 && context < DDB_ACTION_CTX_COUNT);
@@ -124,7 +118,6 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
 gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeIter *ctx_group_iter, char *required_group_name, GtkTreeIter *iter)
 {
     gboolean iter_found = FALSE;
-
 
     gboolean res = gtk_tree_model_iter_children(tree_model, iter, ctx_group_iter);
     while(res)
@@ -223,7 +216,7 @@ GtkTreeStore* create_actions_tree_store()
             char *group_name = NULL;
             char *action_title = NULL;
 
-            if(name_parts[1] != NULL)   // action title haves group specified in name
+            if(name_parts[1] != NULL)   // action title has group specified in name
             {
                 group_name = name_parts[0];
                 action_title = name_parts[1];
@@ -391,7 +384,7 @@ ToolbarItem* extract_items_from_list(GtkListStore *items_list)
                            ITEMS_COL_ACTION_CTX_ID, &action_context,
                            -1);
 
-        ToolbarItem *item = (ToolbarItem*)malloc(sizeof(ToolbarItem));
+        ToolbarItem *item = (ToolbarItem*)g_malloc(sizeof(ToolbarItem));
         item->action_name = action_name;
         item->icon_name = icon_name;
         item->action = find_action(action_name);
@@ -418,9 +411,6 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     assert(items_treeview != NULL);
     assert(actions_treeview != NULL);
 
-    GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
-    GtkTreeModel *actions_tree_store = gtk_tree_view_get_model(GTK_TREE_VIEW(actions_treeview));
-
     GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
 
     if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
@@ -429,6 +419,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
+    GtkTreeModel *actions_tree_store = NULL;
     GtkTreeIter current_action_iter;
 
     gboolean res = gtk_tree_selection_get_selected(actions_selection, &actions_tree_store, &current_action_iter);
@@ -436,7 +427,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     char *action_name = NULL;
     int action_ctx = 0;
-    gtk_tree_model_get(GTK_TREE_MODEL(actions_tree_store), &current_action_iter,
+    gtk_tree_model_get(actions_tree_store, &current_action_iter,
                        ACTIONS_COL_NAME, &action_name,
                        ACTIONS_COL_CTX, &action_ctx,
                        -1);
@@ -457,6 +448,8 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     }
 
     GdkPixbuf *new_item_icon = create_pixbuf_by_icon_name("image-missing", 16);
+
+    GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
 
     GtkTreeIter new_item_iter;
     gtk_list_store_append(GTK_LIST_STORE(items_list_store), &new_item_iter);
@@ -479,44 +472,36 @@ void on_button_remove_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
-    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
-    if(model == NULL)
-        return;
-
-    GtkListStore *items_list = GTK_LIST_STORE(model);
-
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
     if(gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
+    GtkTreeModel *items_list = NULL;
     GtkTreeIter selected_iter;
-    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
 
-    gtk_list_store_remove(items_list, &selected_iter);
+    gtk_tree_selection_get_selected(selection, &items_list, &selected_iter);
+
+    gtk_list_store_remove(GTK_LIST_STORE(items_list), &selected_iter);
 }
 
 void on_button_up_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
-    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
-    if(model == NULL)
-        return;
-
-    GtkListStore *items_list = GTK_LIST_STORE(model);
-
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
     if(gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
+    GtkTreeModel *items_list = NULL;
     GtkTreeIter selected_iter;
-    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
 
-    GtkTreePath *prev_row_path = gtk_tree_model_get_path(model, &selected_iter);
+    gtk_tree_selection_get_selected(selection, &items_list, &selected_iter);
+
+    GtkTreePath *prev_row_path = gtk_tree_model_get_path(items_list, &selected_iter);
     gtk_tree_path_prev(prev_row_path);
 
     GtkTreeIter prev_row_iter;
-    if(!gtk_tree_model_get_iter(model, &prev_row_iter, prev_row_path))
+    if(!gtk_tree_model_get_iter(items_list, &prev_row_iter, prev_row_path))
     {
         gtk_tree_path_free(prev_row_path);
         return;
@@ -524,31 +509,27 @@ void on_button_up_clicked(GtkButton *button, gpointer user_data)
 
     gtk_tree_path_free(prev_row_path);
 
-    gtk_list_store_swap(items_list, &selected_iter, &prev_row_iter);
+    gtk_list_store_swap(GTK_LIST_STORE(items_list), &selected_iter, &prev_row_iter);
 }
 
 void on_button_down_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
-    GtkTreeModel *model = gtk_tree_view_get_model(items_treeview);
-    if(model == NULL)
-        return;
-
-    GtkListStore *items_list = GTK_LIST_STORE(model);
-
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
     if(gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
+    GtkTreeModel *items_list = NULL;
     GtkTreeIter selected_iter;
-    gtk_tree_selection_get_selected(selection, &model, &selected_iter);
 
-    GtkTreePath *next_row_path = gtk_tree_model_get_path(model, &selected_iter);
+    gtk_tree_selection_get_selected(selection, &items_list, &selected_iter);
+
+    GtkTreePath *next_row_path = gtk_tree_model_get_path(items_list, &selected_iter);
     gtk_tree_path_next(next_row_path);
 
     GtkTreeIter next_row_iter;
-    if(!gtk_tree_model_get_iter(model, &next_row_iter, next_row_path))
+    if(!gtk_tree_model_get_iter(items_list, &next_row_iter, next_row_path))
     {
         gtk_tree_path_free(next_row_path);
         return;
@@ -556,7 +537,7 @@ void on_button_down_clicked(GtkButton *button, gpointer user_data)
 
     gtk_tree_path_free(next_row_path);
 
-    gtk_list_store_swap(items_list, &selected_iter, &next_row_iter);
+    gtk_list_store_swap(GTK_LIST_STORE(items_list), &selected_iter, &next_row_iter);
 }
 
 void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
@@ -568,14 +549,14 @@ void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     GtkWidget *items_treeview = lookup_widget(GTK_WIDGET(dialog), "items_treeview");
     assert(items_treeview != NULL);
 
-    GtkTreeModel *items_list_store = gtk_tree_view_get_model(GTK_TREE_VIEW(items_treeview));
-
     GtkTreeSelection *items_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(items_treeview));
 
     if(gtk_tree_selection_count_selected_rows(items_selection) != 1)
         return;
 
+    GtkTreeModel *items_list_store = NULL;
     GtkTreeIter selected_item_iter;
+
     gtk_tree_selection_get_selected(items_selection, &items_list_store, &selected_item_iter);
 
     char *icon_name = NULL;
@@ -730,7 +711,7 @@ void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore
 
     dialog_connect_signals(dialog);
 
-    // connect handler to items list to be able catch situation when all items
+    // connect handler to items list to be able to catch situation when all items
     // are deleted and Ok button should be disabled
     g_signal_connect(items_list_store, "row-deleted", G_CALLBACK(on_items_list_row_deleted), dialog);
     g_signal_connect(items_list_store, "row-inserted", G_CALLBACK(on_items_list_row_inserted), dialog);

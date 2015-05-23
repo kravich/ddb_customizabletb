@@ -63,6 +63,22 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
     }
 }
 
+int strings_count(char **strings_arr)
+{
+    assert(strings_arr != NULL);
+
+    int count = 0;
+
+    char **curr_string = strings_arr;
+    while(*curr_string != NULL)
+    {
+        count++;
+        curr_string++;
+    }
+
+    return count;
+}
+
 ToolbarItem* toolbar_items_deserialize(char *layout)
 {
     ToolbarItem *toolbar_items = NULL;
@@ -74,25 +90,22 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
     {
         ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
 
-        char **parts = g_strsplit(*current_element, "|", 3);
+        char **parts = g_strsplit(*current_element, "|", -1);
 
-        if(parts[0] == NULL || parts[1] == NULL || parts[2] == NULL || item == NULL)
-        {
-            g_strfreev(parts);
-            g_strfreev(elements);
-            free_items_list(toolbar_items);
-            if(item != NULL) g_free(item);
-            return NULL;
-        }
+        if(strings_count(parts) != 3)
+            goto on_error;
 
         char *action_name = parts[0];
-        char* action_context = parts[1];
         char *icon_name = parts[2];
+        int action_context = atoi(parts[1]);
 
-        item->action_name = g_strdup(action_name); // TODO: should we check the return value of g_strdup()?
+        if(action_context < DDB_ACTION_CTX_MAIN || action_context > DDB_ACTION_CTX_NOWPLAYING)
+            goto on_error;
+
+        item->action_name = g_strdup(action_name);
         item->icon_name = g_strdup(icon_name);
         item->action = find_action(action_name);
-        item->action_context = atoi(action_context); // TODO: add check
+        item->action_context = action_context;
         item->next = NULL;
 
         g_strfreev(parts);
@@ -100,6 +113,14 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
         toolbar_items = toolbar_items_append(toolbar_items, item);
 
         current_element++;
+        continue;
+
+    on_error:
+        g_strfreev(parts);
+        g_strfreev(elements);
+        free_items_list(toolbar_items);
+        g_free(item);
+        return NULL;
     }
 
     g_strfreev(elements);
@@ -130,7 +151,6 @@ ToolbarItem* create_default_toolbar_items()
     for(int i = 0; i < default_items_size; i++)
     {
         ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
-        assert(item != NULL); // TODO: add proper check for this case
 
         item->action_name = g_strdup(default_items[i].action_name);
         item->icon_name = g_strdup(default_items[i].icon_name);
