@@ -708,6 +708,12 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
     gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconview), ICONS_COL_PIXBUF);
     gtk_icon_view_set_text_column(GTK_ICON_VIEW(iconview), ICONS_COL_NAME);
 
+#if !GTK_CHECK_VERSION(3,0,0)
+    // this is required for gtk2 version to properly wrap names of the icons,
+    // but does opposite in gtk3 version
+    gtk_icon_view_set_item_width(GTK_ICON_VIEW(iconview), 110);
+#endif
+
     // connect category change handler
     GtkTreeSelection *categories_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(categories_treeview));
     g_signal_connect(categories_selection, "changed", G_CALLBACK(on_categories_selection_changed), iconview);
