@@ -34,7 +34,7 @@
 #if GTK_CHECK_VERSION(3,0,0)
 #define TOOLBAR_ICON_SIZE 16
 #else
-#define TOOLBAR_ICON_SIZE 24
+#define TOOLBAR_ICON_SIZE 20
 #endif
 
 extern DB_functions_t *deadbeef;
