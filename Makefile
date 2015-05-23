@@ -21,10 +21,10 @@
 
 CC = gcc
 
-CFLAGS += -std=c99 -fPIC -Wall -Werror -Wfatal-errors
+CFLAGS += -std=c99 -fPIC -Wall -Werror -Wfatal-errors -Wno-deprecated-declarations
 CFLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=unused-function
-#CFLAGS += -O2
-CFLAGS += -g -Wno-deprecated-declarations
+CFLAGS += -O2
+#CFLAGS += -g
 
 GTK2_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-2.0)
 GTK2_LIBS = $(shell pkg-config --libs gtk+-2.0)
