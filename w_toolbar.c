@@ -31,6 +31,12 @@
 
 #define TMP_BUFF_SIZE 256
 
+#if GTK_CHECK_VERSION(3,0,0)
+#define TOOLBAR_ICON_SIZE 16
+#else
+#define TOOLBAR_ICON_SIZE 24
+#endif
+
 extern DB_functions_t *deadbeef;
 extern ddb_gtkui_t *gtkui;
 
