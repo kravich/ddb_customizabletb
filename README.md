@@ -1,7 +1,7 @@
 Customizable toolbar plugin for DeaDBeeF music player
 =====================================================
 This plugin provides toolbar widget which intended to be used instead of default static DeadBeef's toolbar.
-It allows to add any action on toolbar as a button, put it in required position and assign custom icon to it 
+It allows to add any action on toolbar as a button, put it in required position and assign custom icon to it.
 Or it could be used to simply rearrange default stop/play/pause/prev/next actions in a preferrable order.
 
 Installation using precompiled binaries
@@ -13,8 +13,8 @@ Installation using precompiled binaries
 
 Building and installing from source
 -----------------------------------
-First, intall development packages for gtk2 and gtk3 (libgtk2.0-dev and libgtk-3-dev in Debian/Ubuntu)
-Then
+First, intall development packages for gtk2 and gtk3 (libgtk2.0-dev and libgtk-3-dev in Debian/Ubuntu).
+Then,
 ```
 git clone https://github.com/kravich/ddb_customizabletb.git
 cd ddb_customizabletb
