@@ -691,7 +691,6 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
 {
     GtkWidget *categories_treeview = lookup_widget(dialog, "categories_treeview");
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
-    GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
 
     assert(categories_treeview != NULL);
     assert(iconview != NULL);
@@ -715,9 +714,6 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
 
     // connect icon selection handler
     g_signal_connect(iconview, "selection-changed", G_CALLBACK(on_iconview_selection_changed), dialog);
-
-    // make ok button insensitive by default
-    gtk_widget_set_sensitive(ok_button, FALSE);
 
     GtkTreeModel *categories_list = create_categories_list_store();
     gtk_tree_view_set_model(GTK_TREE_VIEW(categories_treeview), categories_list);

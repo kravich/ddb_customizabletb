@@ -105,24 +105,28 @@ create_customization_dialog (void)
   gtk_table_attach (GTK_TABLE (table1), button_remove, 1, 2, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_widget_set_sensitive (button_remove, FALSE);
 
   button_down = gtk_button_new_from_stock ("gtk-go-down");
   gtk_widget_show (button_down);
   gtk_table_attach (GTK_TABLE (table1), button_down, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_widget_set_sensitive (button_down, FALSE);
 
   button_up = gtk_button_new_from_stock ("gtk-go-up");
   gtk_widget_show (button_up);
   gtk_table_attach (GTK_TABLE (table1), button_up, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_widget_set_sensitive (button_up, FALSE);
 
   button_change_icon = gtk_button_new ();
   gtk_widget_show (button_change_icon);
   gtk_table_attach (GTK_TABLE (table1), button_change_icon, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_widget_set_sensitive (button_change_icon, FALSE);
 
   alignment4 = gtk_alignment_new (0.5, 0.5, 0, 0);
   gtk_widget_show (alignment4);
@@ -178,6 +182,7 @@ create_customization_dialog (void)
   gtk_table_attach (GTK_TABLE (table2), button_add, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_widget_set_sensitive (button_add, FALSE);
 
   label2 = gtk_label_new ("Available actions");
   gtk_widget_show (label2);
@@ -293,6 +298,7 @@ create_icon_selection_dialog (void)
   ok_button = gtk_button_new_from_stock ("gtk-ok");
   gtk_widget_show (ok_button);
   gtk_dialog_add_action_widget (GTK_DIALOG (icon_selection_dialog), ok_button, GTK_RESPONSE_OK);
+  gtk_widget_set_sensitive (ok_button, FALSE);
   gtk_widget_set_can_default(ok_button, TRUE);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
