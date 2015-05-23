@@ -25,7 +25,6 @@
 
 #include "interface.h"
 #include "support.h"
-#include "utils.h"
 #include "trace.h"
 
 enum

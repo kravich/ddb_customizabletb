@@ -188,8 +188,6 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 
     assert(item->action != NULL);
 
-    trace("Activating \"%s\" in context %d\n", item->action_name, item->action_context);
-
     if(item->action->callback)
         activate_action_14(item->action, -1);
     else if(item->action->callback2)
@@ -270,8 +268,6 @@ void empty_hbox(GtkBox *hbox)
 
 void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
 {
-    trace("Updating toolbar items\n");
-
     if(new_toolbar_items == NULL)
         return;
 
