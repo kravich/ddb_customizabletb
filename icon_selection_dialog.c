@@ -721,6 +721,12 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
 
     GtkTreeModel *categories_list = create_categories_list_store();
     gtk_tree_view_set_model(GTK_TREE_VIEW(categories_treeview), categories_list);
+
+    // select first element in categories list
+    GtkTreeIter first_iter;
+    if(gtk_tree_model_get_iter_first(categories_list, &first_iter))
+        gtk_tree_selection_select_iter(categories_selection, &first_iter);
+
     g_object_unref(categories_list);
 }
 
