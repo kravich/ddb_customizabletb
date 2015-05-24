@@ -26,11 +26,11 @@ CFLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-variable -Wno-err
 CFLAGS += -O2
 #CFLAGS += -g
 
-GTK2_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-2.0)
-GTK2_LIBS = $(shell pkg-config --libs gtk+-2.0)
+GTK2_INCLUDE_DIRS ?= $(shell pkg-config --cflags gtk+-2.0)
+GTK2_LIBS ?= $(shell pkg-config --libs gtk+-2.0)
 
-GTK3_INCLUDE_DIRS = $(shell pkg-config --cflags gtk+-3.0)
-GTK3_LIBS = $(shell pkg-config --libs gtk+-3.0)
+GTK3_INCLUDE_DIRS ?= $(shell pkg-config --cflags gtk+-3.0)
+GTK3_LIBS ?= $(shell pkg-config --libs gtk+-3.0)
 
 LDFLAGS +=
 
