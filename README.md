@@ -7,8 +7,8 @@ Or it could be used to simply rearrange default stop/play/pause/prev/next action
 Installation using precompiled binaries
 ---------------------------------------
 1. Get zip archive for your architecture:
-    x86: 
-    x86_64: 
+    x86:    https://yadi.sk/d/XzCszqRNgqHJ7
+    x86_64: https://yadi.sk/d/QoR1uMJFgqHJb
 2. Extract two .so's from archive and put them in ~/.local/lib/deadbeef
 
 Building and installing from source
