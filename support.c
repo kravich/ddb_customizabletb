@@ -148,3 +148,17 @@ void gtk_dialog_set_has_separator(GtkDialog *dialog, gboolean setting)
 {
 }
 #endif
+
+#if !GLIB_CHECK_VERSION(2,28,0)
+void g_list_free_full (GList *list, GDestroyNotify free_func)
+{
+    GList *current_node = list;
+    while(current_node != NULL)
+    {
+        free_func(current_node->data);
+        current_node = current_node->next;
+    }
+
+    g_list_free(list);
+}
+#endif

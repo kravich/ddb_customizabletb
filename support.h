@@ -43,8 +43,17 @@ void        glade_set_atk_action_description (AtkAction       *action,
                                               const gchar     *description);
 
 
-/* Following functions are added manually to support some deprecated GTK2 APIs in GTK3 build */
+/* Following functions are added to support some uncommon and relatively new GTK2/GTK3 and GLIB APIs */
 
 #if GTK_CHECK_VERSION(3,0,0)
 void gtk_dialog_set_has_separator(GtkDialog *dialog, gboolean setting);
+#endif
+
+#if !GTK_CHECK_VERSION(2,18,0)
+#define gtk_widget_set_can_focus(widget, canfocus) {if (canfocus) GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS); else GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_FOCUS);}
+#define gtk_widget_set_can_default(widget, candefault) {if (candefault) GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_DEFAULT); else GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_DEFAULT);}
+#endif
+
+#if !GLIB_CHECK_VERSION(2,28,0)
+void g_list_free_full (GList *list, GDestroyNotify free_func);
 #endif

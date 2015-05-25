@@ -278,7 +278,7 @@ GtkTreeStore* create_actions_tree_store()
 }
 
 void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
-                        GtkCellRenderer *action_title_cell_renderer,
+                        GtkCellRenderer *item_pixbuf_cell_renderer,
                         GtkTreeModel *tree_model,
                         GtkTreeIter *iter,
                         gpointer data)
@@ -292,13 +292,13 @@ void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
                                          &was_action_found,
                                          -1);
 
-    g_object_set(action_title_cell_renderer, "pixbuf", item_pixbuf, NULL);
+    g_object_set(item_pixbuf_cell_renderer, "pixbuf", item_pixbuf, NULL);
     g_object_unref(item_pixbuf);
 
     if(was_action_found)
-        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, TRUE);
+        g_object_set(item_pixbuf_cell_renderer, "sensitive", TRUE, NULL);
     else
-        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, FALSE);
+        g_object_set(item_pixbuf_cell_renderer, "sensitive", FALSE, NULL);
 }
 
 void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
@@ -319,7 +319,7 @@ void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
     if(was_action_found)
     {
         g_object_set(action_title_cell_renderer, "text", item_title, NULL);
-        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, TRUE);
+        g_object_set(action_title_cell_renderer, "sensitive", TRUE, NULL);
     }
     else
     {
@@ -328,7 +328,7 @@ void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
 
         g_object_set(action_title_cell_renderer, "text", buff, NULL);
 
-        gtk_cell_renderer_set_sensitive(action_title_cell_renderer, FALSE);
+        g_object_set(action_title_cell_renderer, "sensitive", FALSE, NULL);
     }
 
     g_free(item_title);

@@ -28,6 +28,7 @@
 #include "customization_dialog.h"
 #include "utils.h"
 #include "trace.h"
+#include "support.h"
 
 #define TMP_BUFF_SIZE 256
 
@@ -107,7 +108,7 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
     strncpy(buff, param_value, buff_size - 1);
 
     g_free(param_value);
-    g_match_info_unref(match_info);
+    g_match_info_free(match_info);
     g_regex_unref(regex);
 }
 
