@@ -18,10 +18,8 @@
 #    along with ddb_customizabletb.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-CFLAGS += -std=c99 -fPIC -Wall -Werror -Wfatal-errors -Wno-deprecated-declarations
-CFLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=unused-function
+CFLAGS += -std=c99 -fPIC -Wall -Wno-deprecated-declarations
 CFLAGS += -O2
-#CFLAGS += -g
 
 GTK2_INCLUDE_DIRS ?= $(shell pkg-config --cflags gtk+-2.0)
 GTK2_LIBS ?= $(shell pkg-config --libs gtk+-2.0)
@@ -67,10 +65,10 @@ gtk3: $(TARGET_GTK3)
 	$(CC) -c -o $@ $< $(CFLAGS) $(GTK3_INCLUDE_DIRS)
 
 $(TARGET_GTK2): $(OBJS_GTK2)
-	$(CC) --shared -o $@ $^ $(CFLAGS) $(LDFLAGS) $(GTK2_LIBS)
+	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK2_LIBS)
 
 $(TARGET_GTK3): $(OBJS_GTK3)
-	$(CC) --shared -o $@ $^ $(CFLAGS) $(LDFLAGS) $(GTK3_LIBS)
+	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK3_LIBS)
 
 deploy: $(TARGET_GTK2) $(TARGET_GTK3)
 	mkdir -p ~/.local/lib/deadbeef
