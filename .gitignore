@@ -1,4 +1,4 @@
-codelite
 *.o
+*.d
 *.so
 *.bak
