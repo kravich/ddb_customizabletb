@@ -303,8 +303,7 @@ void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
 
 ddb_gtkui_widget_t* w_toolbar_create()
 {
-    w_toolbar_t *w = g_malloc(sizeof(w_toolbar_t));
-    memset(w, 0, sizeof(w_toolbar_t));
+    w_toolbar_t *w = g_malloc0(sizeof(w_toolbar_t));
 
     w->base.load = w_toolbar_load;
     w->base.save = w_toolbar_save;
