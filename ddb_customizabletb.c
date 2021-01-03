@@ -54,7 +54,7 @@ static DB_misc_t toolbar_plugin =
     .plugin.type = DB_PLUGIN_MISC,
 
     .plugin.version_major = 0,
-    .plugin.version_minor = 1,
+    .plugin.version_minor = 2,
 
     .plugin.flags = 0,
     .plugin.reserved1 = 0,
