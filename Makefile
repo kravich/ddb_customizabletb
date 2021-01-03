@@ -72,10 +72,15 @@ $(TARGET_GTK2): $(OBJS_GTK2)
 $(TARGET_GTK3): $(OBJS_GTK3)
 	$(CC) --shared -o $@ $^ $(CFLAGS) $(LDFLAGS) $(GTK3_LIBS)
 
+deploy: $(TARGET_GTK2) $(TARGET_GTK3)
+	mkdir -p ~/.local/lib/deadbeef
+	cp $(TARGET_GTK2) ~/.local/lib/deadbeef
+	cp $(TARGET_GTK3) ~/.local/lib/deadbeef
+
 clean:
 	rm -f $(TARGET_GTK2) $(TARGET_GTK3) $(OBJS_GTK2) $(OBJS_GTK3)
 
-.PHONY: clean gtk2 gtk3 all
+.PHONY: clean gtk2 gtk3 deploy all
 
 # disable implicit rules
 .SUFFIXES:
