@@ -56,11 +56,6 @@ static DB_misc_t toolbar_plugin =
     .plugin.version_major = 0,
     .plugin.version_minor = 2,
 
-    .plugin.flags = 0,
-    .plugin.reserved1 = 0,
-    .plugin.reserved2 = 0,
-    .plugin.reserved3 = 0,
-
 #if GTK_CHECK_VERSION(3,0,0)
     .plugin.id = "ddb_customizabletb_gtk3",
     .plugin.name = "Customizable toolbar for GTKUI(GTK3)",
@@ -69,21 +64,7 @@ static DB_misc_t toolbar_plugin =
     .plugin.name = "Customizable toolbar for GTKUI(GTK2)",
 #endif
 
-    .plugin.command = NULL,
-
-    .plugin.start = NULL,
-    .plugin.stop = NULL,
-
     .plugin.connect = toolbar_connect,
-    .plugin.disconnect = NULL,
-
-    .plugin.exec_cmdline = NULL,
-
-    .plugin.get_actions = NULL,
-
-    .plugin.message = NULL,
-
-    .plugin.configdialog = NULL,
 
     .plugin.descr =
         "This plugin implements customizable toolbar widget that could be used\n"
