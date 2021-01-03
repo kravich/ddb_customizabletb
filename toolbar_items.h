@@ -21,9 +21,7 @@
 #ifndef __TOOLBAR_ITEMS_H
 #define __TOOLBAR_ITEMS_H
 
-#define DDB_API_LEVEL 5
-#define DDB_WARN_DEPRECATED 1
-#include <deadbeef/deadbeef.h>
+#include "dbapi.h"
 
 #include <glib.h>
 

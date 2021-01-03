@@ -18,14 +18,10 @@
     along with ddb_customizabletb.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-
-#define DDB_API_LEVEL 5
-#define DDB_WARN_DEPRECATED 1
-#include <deadbeef/deadbeef.h>
-
 #include "w_toolbar.h"
 #include "trace.h"
+
+#include "dbapi.h"
 
 DB_functions_t *deadbeef = NULL;
 ddb_gtkui_t *gtkui = NULL;
@@ -53,7 +49,7 @@ static int toolbar_connect(void)
 
 static DB_misc_t toolbar_plugin =
 {
-    DDB_REQUIRE_API_VERSION(1, 5)
+    DDB_REQUIRE_API_VERSION(1, TARGET_API_LEVEL)
 
     .plugin.type = DB_PLUGIN_MISC,
 

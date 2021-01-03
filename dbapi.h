@@ -1,6 +1,6 @@
 /*
     ddb_customizabletb - Customizable toolbar plugin for DeaDBeeF Music player
-    Copyright (C) 2015 Evgeny Kravchenko <cravchik@yandex.ru>
+    Copyright (C) 2021 Evgeny Kravchenko <cravchik@yandex.ru>
 
     This file is part of ddb_customizabletb.
 
@@ -18,17 +18,13 @@
     along with ddb_customizabletb.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef __DBAPI_H
+#define __DBAPI_H
 
-#include "dbapi.h"
+#define TARGET_API_LEVEL 5
 
-#include <gtk/gtk.h>
-
-DB_plugin_action_t* find_action(const char *action_name);
-
-GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px);
-
-GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px);
+#define DDB_API_LEVEL TARGET_API_LEVEL
+#define DDB_WARN_DEPRECATED 1
+#include <deadbeef/deadbeef.h>
 
 #endif
