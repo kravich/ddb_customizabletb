@@ -50,33 +50,41 @@ OBJS_GTK3 = $(SOURCES:%.c=%_gtk3.o)
 TARGET_GTK2 = ddb_customizabletb_gtk2.so
 TARGET_GTK3 = ddb_customizabletb_gtk3.so
 
+V ?= 0
+
+ifeq ($(V), 0)
+	Q = @
+endif
+
 all: $(TARGET_GTK2) $(TARGET_GTK3)
 
 gtk2: $(TARGET_GTK2)
 
 gtk3: $(TARGET_GTK3)
 
-# compile objects for gtk2...
 %_gtk2.o: %.c $(HEADERS)
-	$(CC) -c -o $@ $< $(CFLAGS) $(GTK2_INCLUDE_DIRS)
+	$(info CC $@)
+	$(Q)$(CC) -c -o $@ $< $(CFLAGS) $(GTK2_INCLUDE_DIRS)
 
-# ... and gtk3 independently
 %_gtk3.o: %.c $(HEADERS)
-	$(CC) -c -o $@ $< $(CFLAGS) $(GTK3_INCLUDE_DIRS)
+	$(info CC $@)
+	$(Q)$(CC) -c -o $@ $< $(CFLAGS) $(GTK3_INCLUDE_DIRS)
 
 $(TARGET_GTK2): $(OBJS_GTK2)
-	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK2_LIBS)
+	$(info LD $@)
+	$(Q)$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK2_LIBS)
 
 $(TARGET_GTK3): $(OBJS_GTK3)
-	$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK3_LIBS)
+	$(info LD $@)
+	$(Q)$(CC) --shared -o $@ $^ $(LDFLAGS) $(GTK3_LIBS)
 
 deploy: $(TARGET_GTK2) $(TARGET_GTK3)
-	mkdir -p ~/.local/lib/deadbeef
-	cp $(TARGET_GTK2) ~/.local/lib/deadbeef
-	cp $(TARGET_GTK3) ~/.local/lib/deadbeef
+	$(Q)mkdir -p ~/.local/lib/deadbeef
+	$(Q)cp $(TARGET_GTK2) ~/.local/lib/deadbeef
+	$(Q)cp $(TARGET_GTK3) ~/.local/lib/deadbeef
 
 clean:
-	rm -f $(TARGET_GTK2) $(TARGET_GTK3) $(OBJS_GTK2) $(OBJS_GTK3)
+	$(Q)rm -f $(TARGET_GTK2) $(TARGET_GTK3) $(OBJS_GTK2) $(OBJS_GTK3)
 
 .PHONY: clean gtk2 gtk3 deploy all
 
