@@ -25,11 +25,11 @@
 
 #include "trace.h"
 
-extern DB_functions_t *deadbeef;
+extern DB_functions_t *g_deadbeef;
 
 DB_plugin_action_t* find_action(const char *action_name)
 {
-    DB_plugin_t **plugins = deadbeef->plug_get_list();
+    DB_plugin_t **plugins = g_deadbeef->plug_get_list();
 
     for(int i = 0; plugins[i] != NULL; i++)
     {

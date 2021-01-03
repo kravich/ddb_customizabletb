@@ -23,15 +23,14 @@
 
 #include "dbapi.h"
 
-DB_functions_t *deadbeef = NULL;
-ddb_gtkui_t *gtkui = NULL;
-
+DB_functions_t *g_deadbeef = NULL;
+ddb_gtkui_t *g_gtkui = NULL;
 
 static int toolbar_connect(void)
 {
-    gtkui = (ddb_gtkui_t*)deadbeef->plug_get_for_id(DDB_GTKUI_PLUGIN_ID);
+    g_gtkui = (ddb_gtkui_t*)g_deadbeef->plug_get_for_id(DDB_GTKUI_PLUGIN_ID);
 
-    if(gtkui == NULL)
+    if (g_gtkui == NULL)
     {
 #if GTK_CHECK_VERSION(3,0,0)
         trace("Failed to connect to GTKUI(GTK3), deactivating\n");
@@ -42,7 +41,7 @@ static int toolbar_connect(void)
     }
 
     // register widget
-    gtkui->w_reg_widget("Customizable toolbar", 0, w_toolbar_create, "customizable_toolbar", NULL);
+    g_gtkui->w_reg_widget("Customizable toolbar", 0, w_toolbar_create, "customizable_toolbar", NULL);
 
     return 0;
 }
@@ -100,6 +99,6 @@ DB_plugin_t* ddb_customizabletb_gtk3_load(DB_functions_t *db_api)
 DB_plugin_t* ddb_customizabletb_gtk2_load(DB_functions_t *db_api)
 #endif
 {
-    deadbeef = db_api;
+    g_deadbeef = db_api;
     return (DB_plugin_t*)&toolbar_plugin;
 }

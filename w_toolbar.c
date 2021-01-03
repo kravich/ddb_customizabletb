@@ -38,8 +38,8 @@
 #define TOOLBAR_ICON_SIZE 22
 #endif
 
-extern DB_functions_t *deadbeef;
-extern ddb_gtkui_t *gtkui;
+extern DB_functions_t *g_deadbeef;
+extern ddb_gtkui_t *g_gtkui;
 
 typedef struct
 {
@@ -159,26 +159,26 @@ void activate_action_14(DB_plugin_action_t *action, int cursor)
     if (!(action->flags & DB_ACTION_MULTIPLE_TRACKS))
     {
         if (cursor == -1) {
-            cursor = deadbeef->pl_get_cursor (PL_MAIN);
+            cursor = g_deadbeef->pl_get_cursor (PL_MAIN);
         }
         if (cursor == -1)
         {
             return;
         }
-        DB_playItem_t *it = deadbeef->pl_get_for_idx_and_iter (cursor, PL_MAIN);
+        DB_playItem_t *it = g_deadbeef->pl_get_for_idx_and_iter (cursor, PL_MAIN);
         action->callback (action, it);
-        deadbeef->pl_item_unref (it);
+        g_deadbeef->pl_item_unref (it);
         return;
     }
 
     //We end up here if plugin won't traverse tracks and we have to do it ourselves
-    DB_playItem_t *it = deadbeef->pl_get_first (PL_MAIN);
+    DB_playItem_t *it = g_deadbeef->pl_get_first (PL_MAIN);
     while (it) {
-        if (deadbeef->pl_is_selected (it)) {
+        if (g_deadbeef->pl_is_selected (it)) {
             action->callback (action, it);
         }
-        DB_playItem_t *next = deadbeef->pl_get_next (it, PL_MAIN);
-        deadbeef->pl_item_unref (it);
+        DB_playItem_t *next = g_deadbeef->pl_get_next (it, PL_MAIN);
+        g_deadbeef->pl_item_unref (it);
         it = next;
     }
 }
@@ -197,7 +197,7 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 
 void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
 {
-    GtkWindow *mainwin = GTK_WINDOW(gtkui->get_mainwin());
+    GtkWindow *mainwin = GTK_WINDOW(g_gtkui->get_mainwin());
 
     GtkWidget *msgbox = gtk_message_dialog_new(mainwin,
                                                GTK_DIALOG_MODAL,
@@ -253,7 +253,7 @@ void w_toolbar_init(ddb_gtkui_widget_t *w)
 
     fill_toolbar(toolbar);
 
-    gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, w);
+    gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), g_gtkui->w_override_signals, w);
 }
 
 void empty_hbox(GtkBox *hbox)
@@ -277,14 +277,14 @@ void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_item
 
     empty_hbox(GTK_BOX(toolbar->base.widget));
     fill_toolbar(toolbar);
-    gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), gtkui->w_override_signals, toolbar);
+    gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), g_gtkui->w_override_signals, toolbar);
 }
 
 void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
 
-    GtkWindow *mainwin = GTK_WINDOW(gtkui->get_mainwin());
+    GtkWindow *mainwin = GTK_WINDOW(g_gtkui->get_mainwin());
 
     ToolbarItem *new_toolbar_items = run_customization_dialog(mainwin, toolbar->items_list);
     if(new_toolbar_items != NULL)
@@ -316,7 +316,7 @@ ddb_gtkui_widget_t* w_toolbar_create()
     w->base.widget = gtk_hbox_new(FALSE, 0);
     gtk_widget_show((GtkWidget*)(w->base.widget));
 
-    gtkui->w_override_signals(w->base.widget, w);
+    g_gtkui->w_override_signals(w->base.widget, w);
 
     w->items_list = create_default_toolbar_items();
 

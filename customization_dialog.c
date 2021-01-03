@@ -32,7 +32,7 @@
 #include "icon_selection_dialog.h"
 #include "trace.h"
 
-extern DB_functions_t *deadbeef;
+extern DB_functions_t *g_deadbeef;
 
 enum
 {
@@ -198,7 +198,7 @@ GtkTreeStore* create_actions_tree_store()
     };
 
 
-    DB_plugin_t **plugins = deadbeef->plug_get_list();
+    DB_plugin_t **plugins = g_deadbeef->plug_get_list();
 
     for(int plug_i = 0; plugins[plug_i] != NULL; plug_i++)
     {
