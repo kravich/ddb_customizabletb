@@ -59,10 +59,10 @@ static const char* extract_widget_params(const char *s, char *buff, size_t buff_
     const char *p = s;
     unsigned int n = 0;
 
-    while((*p != '\0') &&
+    while ((*p != '\0') &&
           (*p != '{'))
     {
-        if(n < (buff_size - 1))
+        if (n < (buff_size - 1))
         {
             buff[n] = *p;
             n++;
@@ -73,7 +73,7 @@ static const char* extract_widget_params(const char *s, char *buff, size_t buff_
 
     buff[n] = '\0';
 
-    if(*p == '{')
+    if (*p == '{')
         p++;
 
     return p;
@@ -87,7 +87,7 @@ static void extract_layout_param(const char *params, char *buff, size_t buff_siz
 
     GError *error = NULL;
     GRegex *regex = g_regex_new("\\s*layout\\s*=\\s*\\\"(.*)\\\"\\s*", 0, 0, &error);
-    if(error != NULL)
+    if (error != NULL)
     {
         trace("Failed to compile regex: %s\n", error->message);
         g_error_free(error);
@@ -96,7 +96,7 @@ static void extract_layout_param(const char *params, char *buff, size_t buff_siz
 
     GMatchInfo *match_info = NULL;
 
-    if(!g_regex_match(regex, params, 0, &match_info))
+    if (!g_regex_match(regex, params, 0, &match_info))
     {
         trace("'layout' param was not found\n");
         g_regex_unref(regex);
@@ -123,7 +123,7 @@ static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const
 
     ToolbarItem *saved_toolbar_items = toolbar_items_deserialize(layout_str);
 
-    if(saved_toolbar_items != NULL)
+    if (saved_toolbar_items != NULL)
     {
         free_items_list(toolbar->items_list);
         toolbar->items_list = saved_toolbar_items;
@@ -188,9 +188,9 @@ static void toolbar_button_activate_action(GtkButton *button, gpointer user_data
 
     assert(item->action != NULL);
 
-    if(item->action->callback)
+    if (item->action->callback)
         activate_action_14(item->action, -1);
-    else if(item->action->callback2)
+    else if (item->action->callback2)
         item->action->callback2(item->action, item->action_context);
 }
 
@@ -214,7 +214,7 @@ static void fill_toolbar(w_toolbar_t *toolbar)
     GtkBox *hbox = GTK_BOX(toolbar->base.widget);
 
     ToolbarItem *current_item = toolbar->items_list;
-    while(current_item != NULL)
+    while (current_item != NULL)
     {
         GtkWidget *button = gtk_button_new();
         gtk_widget_set_can_focus(button, FALSE);
@@ -229,7 +229,7 @@ static void fill_toolbar(w_toolbar_t *toolbar)
         gtk_widget_show(image);
         gtk_container_add(GTK_CONTAINER(button), image);
 
-        if(current_item->action != NULL)
+        if (current_item->action != NULL)
         {
             g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
         }
@@ -259,7 +259,7 @@ static void empty_hbox(GtkBox *hbox)
 {
     GList *list = gtk_container_get_children(GTK_CONTAINER(hbox));
 
-    for(GList *it = list; it != NULL; it = g_list_next(it)) {
+    for (GList *it = list; it != NULL; it = g_list_next(it)) {
         gtk_widget_destroy(GTK_WIDGET(it->data));
     }
 
@@ -268,7 +268,7 @@ static void empty_hbox(GtkBox *hbox)
 
 static void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
 {
-    if(new_toolbar_items == NULL)
+    if (new_toolbar_items == NULL)
         return;
 
     free_items_list(toolbar->items_list);
@@ -286,7 +286,7 @@ static void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
     GtkWindow *mainwin = GTK_WINDOW(g_gtkui->get_mainwin());
 
     ToolbarItem *new_toolbar_items = run_customization_dialog(mainwin, toolbar->items_list);
-    if(new_toolbar_items != NULL)
+    if (new_toolbar_items != NULL)
         w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }
 

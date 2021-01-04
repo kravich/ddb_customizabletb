@@ -584,16 +584,16 @@ static GtkTreeModel* create_categories_list_store(void)
     GtkIconTheme *default_icon_theme = gtk_icon_theme_get_default();
 
     ContextRecord *current_context = contexes;
-    while(current_context->context_name != NULL)
+    while (current_context->context_name != NULL)
     {
         GtkListStore *icons_list = gtk_list_store_new(ICONS_COLS_NUM, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 
         const char **current_icon_name_ptr = current_context->icon_names_arr;
-        while(*current_icon_name_ptr != NULL)
+        while (*current_icon_name_ptr != NULL)
         {
             const char *icon_name = *current_icon_name_ptr;
 
-            if(gtk_icon_theme_has_icon(default_icon_theme, icon_name) == FALSE)
+            if (gtk_icon_theme_has_icon(default_icon_theme, icon_name) == FALSE)
             {
                 current_icon_name_ptr++;
                 continue;
@@ -606,7 +606,7 @@ static GtkTreeModel* create_categories_list_store(void)
                                                        GTK_ICON_LOOKUP_FORCE_SIZE,
                                                        &error);
 
-            if(error != NULL)
+            if (error != NULL)
             {
                 trace("Failed to create icon %s: %s\n", icon_name, error->message);
                 g_error_free(error);
@@ -645,7 +645,7 @@ static void on_categories_selection_changed(GtkTreeSelection *categories_selecti
 {
     GtkIconView *iconview = GTK_ICON_VIEW(user_data);
 
-    if(gtk_tree_selection_count_selected_rows(categories_selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(categories_selection) != 1)
     {
         gtk_icon_view_set_model(iconview, NULL);
         return;
@@ -676,12 +676,12 @@ static void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_d
     GList *selected_items = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(iconview));
 
     gboolean single_item_selected = FALSE;
-    if(selected_items != NULL && selected_items->next == NULL)
+    if (selected_items != NULL && selected_items->next == NULL)
         single_item_selected = TRUE;
 
     g_list_free_full(selected_items, (GDestroyNotify)gtk_tree_path_free);
 
-    if(single_item_selected)
+    if (single_item_selected)
         gtk_widget_set_sensitive(ok_button, TRUE);
     else
         gtk_widget_set_sensitive(ok_button, FALSE);
@@ -726,7 +726,7 @@ static void setup_icon_selection_dialog(GtkWidget *dialog)
 
     // select first element in categories list
     GtkTreeIter first_iter;
-    if(gtk_tree_model_get_iter_first(categories_list, &first_iter))
+    if (gtk_tree_model_get_iter_first(categories_list, &first_iter))
         gtk_tree_selection_select_iter(categories_selection, &first_iter);
 
     g_object_unref(categories_list);
@@ -741,7 +741,7 @@ static char* get_selected_icon(GtkWidget *dialog)
 
     GList *selected_list = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(iconview));
 
-    if(selected_list  == NULL)
+    if (selected_list  == NULL)
         return NULL;
 
     GtkTreePath *selected_path = (GtkTreePath*)(selected_list->data);
@@ -772,7 +772,7 @@ char* run_icon_selection_dialog(GtkWindow *parent, const char *current_icon_name
     char *new_icon_name = NULL;
 
     gint res = gtk_dialog_run(GTK_DIALOG(d));
-    if(res == GTK_RESPONSE_OK)
+    if (res == GTK_RESPONSE_OK)
     {
         new_icon_name = get_selected_icon(d);
     }

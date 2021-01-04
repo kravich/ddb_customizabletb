@@ -34,11 +34,11 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
     buff[0] = '\0';
 
     ToolbarItem *current_item = toolbar_items;
-    while(current_item != NULL)
+    while (current_item != NULL)
     {
         char *fmt = NULL;
 
-        if(current_item->next != NULL)
+        if (current_item->next != NULL)
             fmt = "%s|%d|%s,";
         else
             fmt = "%s|%d|%s";
@@ -54,7 +54,7 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
 
         g_free(item_str);
 
-        if(buff_free_space > chars_to_add)
+        if (buff_free_space > chars_to_add)
             buff_free_space -= chars_to_add;
         else
             break;
@@ -70,7 +70,7 @@ static int strings_count(char **strings_arr)
     int count = 0;
 
     char **curr_string = strings_arr;
-    while(*curr_string != NULL)
+    while (*curr_string != NULL)
     {
         count++;
         curr_string++;
@@ -86,20 +86,20 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
     char **elements = g_strsplit(layout, ",", -1);
 
     char **current_element = elements;
-    while(*current_element != NULL)
+    while (*current_element != NULL)
     {
         ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
 
         char **parts = g_strsplit(*current_element, "|", -1);
 
-        if(strings_count(parts) != 3)
+        if (strings_count(parts) != 3)
             goto on_error;
 
         char *action_name = parts[0];
         char *icon_name = parts[2];
         int action_context = atoi(parts[1]);
 
-        if(action_context < DDB_ACTION_CTX_MAIN || action_context > DDB_ACTION_CTX_NOWPLAYING)
+        if (action_context < DDB_ACTION_CTX_MAIN || action_context > DDB_ACTION_CTX_NOWPLAYING)
             goto on_error;
 
         item->action_name = g_strdup(action_name);
@@ -148,7 +148,7 @@ ToolbarItem* create_default_toolbar_items(void)
 
     int default_items_size = sizeof(default_items) / sizeof(default_items[0]);
 
-    for(int i = 0; i < default_items_size; i++)
+    for (int i = 0; i < default_items_size; i++)
     {
         ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
 
@@ -167,7 +167,7 @@ ToolbarItem* create_default_toolbar_items(void)
 void free_items_list(ToolbarItem *items_list)
 {
     ToolbarItem *current_item = items_list;
-    while(current_item != NULL)
+    while (current_item != NULL)
     {
         ToolbarItem *next_item = current_item->next;
 
@@ -181,13 +181,13 @@ void free_items_list(ToolbarItem *items_list)
 
 ToolbarItem* toolbar_items_append(ToolbarItem* items, ToolbarItem *new_item)
 {
-    if(items == NULL)
+    if (items == NULL)
     {
         return new_item;
     }
 
     ToolbarItem *last_item = items;
-    while(last_item->next != NULL)
+    while (last_item->next != NULL)
         last_item = last_item->next;
 
     last_item->next = new_item;

@@ -81,12 +81,12 @@ static GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
                                                   G_TYPE_BOOLEAN);
 
     ToolbarItem *current_item = toolbar_items;
-    while(current_item != NULL)
+    while (current_item != NULL)
     {
         const char *action_title = current_item->action_name;
         gboolean was_action_found = FALSE;
 
-        if(current_item->action != NULL)
+        if (current_item->action != NULL)
         {
             action_title = current_item->action->title;
             was_action_found = TRUE;
@@ -120,13 +120,13 @@ static gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeI
     gboolean iter_found = FALSE;
 
     gboolean res = gtk_tree_model_iter_children(tree_model, iter, ctx_group_iter);
-    while(res)
+    while (res)
     {
         char *group_name = NULL;
 
         gtk_tree_model_get(tree_model, iter, 0, &group_name, -1);
 
-        if(g_str_equal(group_name, required_group_name))
+        if (g_str_equal(group_name, required_group_name))
         {
             g_free(group_name);
             iter_found = TRUE;
@@ -200,23 +200,23 @@ static GtkTreeStore* create_actions_tree_store(void)
 
     DB_plugin_t **plugins = g_deadbeef->plug_get_list();
 
-    for(int plug_i = 0; plugins[plug_i] != NULL; plug_i++)
+    for (int plug_i = 0; plugins[plug_i] != NULL; plug_i++)
     {
         DB_plugin_t *curr_plugin = plugins[plug_i];
 
-        if(curr_plugin->get_actions == NULL)
+        if (curr_plugin->get_actions == NULL)
             continue;
 
         DB_plugin_action_t *actions = curr_plugin->get_actions(NULL);
         DB_plugin_action_t *curr_action = actions;
-        while(curr_action != NULL)
+        while (curr_action != NULL)
         {
             char **name_parts = g_strsplit(curr_action->title, "/", 2);
 
             char *group_name = NULL;
             char *action_title = NULL;
 
-            if(name_parts[1] != NULL)   // action title has group specified in name
+            if (name_parts[1] != NULL)   // action title has group specified in name
             {
                 group_name = name_parts[0];
                 action_title = name_parts[1];
@@ -226,16 +226,16 @@ static GtkTreeStore* create_actions_tree_store(void)
                 action_title = name_parts[0];
             }
 
-            for(int curr_context = DDB_ACTION_CTX_MAIN; curr_context < DDB_ACTION_CTX_COUNT; curr_context++)
+            for (int curr_context = DDB_ACTION_CTX_MAIN; curr_context < DDB_ACTION_CTX_COUNT; curr_context++)
             {
-                if((curr_action->flags & contexts[curr_context].valid_flags) == 0)
+                if ((curr_action->flags & contexts[curr_context].valid_flags) == 0)
                     continue;
 
                 GtkTreeIter *ctx_group_iter = contexts[curr_context].ctx_group_iter;
 
                 GtkTreeIter action_iter;
 
-                if(group_name != NULL)
+                if (group_name != NULL)
                 {
                     GtkTreeIter group_iter;
 
@@ -244,7 +244,7 @@ static GtkTreeStore* create_actions_tree_store(void)
                                                                           group_name,
                                                                           &group_iter);
 
-                    if(!group_exists)
+                    if (!group_exists)
                     {
                         gtk_tree_store_append(actions_tree_store, &group_iter, ctx_group_iter);
                         gtk_tree_store_set(actions_tree_store, &group_iter,
@@ -295,7 +295,7 @@ static void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
     g_object_set(item_pixbuf_cell_renderer, "pixbuf", item_pixbuf, NULL);
     g_object_unref(item_pixbuf);
 
-    if(was_action_found)
+    if (was_action_found)
         g_object_set(item_pixbuf_cell_renderer, "sensitive", TRUE, NULL);
     else
         g_object_set(item_pixbuf_cell_renderer, "sensitive", FALSE, NULL);
@@ -316,7 +316,7 @@ static void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
                                          &was_action_found,
                                          -1);
 
-    if(was_action_found)
+    if (was_action_found)
     {
         g_object_set(action_title_cell_renderer, "text", item_title, NULL);
         g_object_set(action_title_cell_renderer, "sensitive", TRUE, NULL);
@@ -372,7 +372,7 @@ static ToolbarItem* extract_items_from_list(GtkListStore *items_list)
 
     gboolean res = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(items_list), &row_iter);
 
-    while(res == TRUE)
+    while (res == TRUE)
     {
         char *action_name = NULL;
         char *icon_name = NULL;
@@ -413,7 +413,7 @@ static void on_button_add_clicked(GtkButton *button, gpointer user_data)
 
     GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
 
-    if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(actions_selection) != 1)
     {
         trace("No action is selected\n");
         return;
@@ -432,7 +432,7 @@ static void on_button_add_clicked(GtkButton *button, gpointer user_data)
                        ACTIONS_COL_CTX, &action_ctx,
                        -1);
 
-    if(g_str_equal(action_name, ""))
+    if (g_str_equal(action_name, ""))
     {
         trace("Group entry is selected, can't add item\n");
         g_free(action_name);
@@ -440,7 +440,7 @@ static void on_button_add_clicked(GtkButton *button, gpointer user_data)
     }
 
     DB_plugin_action_t *action = find_action(action_name);
-    if(action == NULL)
+    if (action == NULL)
     {
         trace("Can't find action for id %s\n", action_name);
         g_free(action_name);
@@ -473,7 +473,7 @@ static void on_button_remove_clicked(GtkButton *button, gpointer user_data)
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
-    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
     GtkTreeModel *items_list = NULL;
@@ -489,7 +489,7 @@ static void on_button_up_clicked(GtkButton *button, gpointer user_data)
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
-    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
     GtkTreeModel *items_list = NULL;
@@ -501,7 +501,7 @@ static void on_button_up_clicked(GtkButton *button, gpointer user_data)
     gtk_tree_path_prev(prev_row_path);
 
     GtkTreeIter prev_row_iter;
-    if(!gtk_tree_model_get_iter(items_list, &prev_row_iter, prev_row_path))
+    if (!gtk_tree_model_get_iter(items_list, &prev_row_iter, prev_row_path))
     {
         gtk_tree_path_free(prev_row_path);
         return;
@@ -517,7 +517,7 @@ static void on_button_down_clicked(GtkButton *button, gpointer user_data)
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
     GtkTreeSelection *selection = gtk_tree_view_get_selection(items_treeview);
-    if(gtk_tree_selection_count_selected_rows(selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(selection) != 1)
         return;
 
     GtkTreeModel *items_list = NULL;
@@ -529,7 +529,7 @@ static void on_button_down_clicked(GtkButton *button, gpointer user_data)
     gtk_tree_path_next(next_row_path);
 
     GtkTreeIter next_row_iter;
-    if(!gtk_tree_model_get_iter(items_list, &next_row_iter, next_row_path))
+    if (!gtk_tree_model_get_iter(items_list, &next_row_iter, next_row_path))
     {
         gtk_tree_path_free(next_row_path);
         return;
@@ -551,7 +551,7 @@ static void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
 
     GtkTreeSelection *items_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(items_treeview));
 
-    if(gtk_tree_selection_count_selected_rows(items_selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(items_selection) != 1)
         return;
 
     GtkTreeModel *items_list_store = NULL;
@@ -567,7 +567,7 @@ static void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     char *new_icon_name = run_icon_selection_dialog(GTK_WINDOW(dialog), icon_name);
     g_free(icon_name);
 
-    if(new_icon_name != NULL)
+    if (new_icon_name != NULL)
     {
         GdkPixbuf *new_icon_pixbuf = create_pixbuf_by_icon_name(new_icon_name, 16);
 
@@ -594,7 +594,7 @@ static void on_items_selection_changed(GtkTreeSelection *items_selection, gpoint
     assert(button_remove != NULL);
     assert(button_change_icon != NULL);
 
-    if(gtk_tree_selection_count_selected_rows(items_selection) == 1)
+    if (gtk_tree_selection_count_selected_rows(items_selection) == 1)
     {
         gtk_widget_set_sensitive(button_up, TRUE);
         gtk_widget_set_sensitive(button_down, TRUE);
@@ -617,7 +617,7 @@ static void on_actions_selection_changed(GtkTreeSelection *actions_selection, gp
 
     assert(button_add != NULL);
 
-    if(gtk_tree_selection_count_selected_rows(actions_selection) != 1)
+    if (gtk_tree_selection_count_selected_rows(actions_selection) != 1)
     {
         gtk_widget_set_sensitive(button_add, FALSE);
         return;
@@ -632,7 +632,7 @@ static void on_actions_selection_changed(GtkTreeSelection *actions_selection, gp
 
     gtk_tree_model_get(actions_tree_store, &iter, ACTIONS_COL_NAME, &action_name, -1);
 
-    if(g_str_equal(action_name, ""))
+    if (g_str_equal(action_name, ""))
         gtk_widget_set_sensitive(button_add, FALSE);
     else
         gtk_widget_set_sensitive(button_add, TRUE);
@@ -677,7 +677,7 @@ static void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
     assert(ok_button != NULL);
 
     GtkTreeIter iter;
-    if(gtk_tree_model_get_iter_first(items_list, &iter) == TRUE)
+    if (gtk_tree_model_get_iter_first(items_list, &iter) == TRUE)
         gtk_widget_set_sensitive(ok_button, TRUE);
     else
         gtk_widget_set_sensitive(ok_button, FALSE);
@@ -733,7 +733,7 @@ ToolbarItem* run_customization_dialog(GtkWindow *parent, ToolbarItem *current_to
 
     ToolbarItem *new_toolbar_items = NULL;
 
-    if(dialog_response == GTK_RESPONSE_OK)
+    if (dialog_response == GTK_RESPONSE_OK)
     {
         new_toolbar_items = extract_items_from_list(items_list_store);
     }
