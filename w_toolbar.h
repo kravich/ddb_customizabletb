@@ -26,6 +26,6 @@
 #include <gtk/gtk.h>
 #include <deadbeef/gtkui_api.h>
 
-ddb_gtkui_widget_t* w_toolbar_create();
+ddb_gtkui_widget_t* w_toolbar_create(void);
 
 #endif

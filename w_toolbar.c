@@ -300,7 +300,7 @@ static void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
     g_signal_connect((gpointer)customize_menu_item, "activate", G_CALLBACK(on_customize_activate), w);
 }
 
-ddb_gtkui_widget_t* w_toolbar_create()
+ddb_gtkui_widget_t* w_toolbar_create(void)
 {
     w_toolbar_t *w = g_malloc0(sizeof(w_toolbar_t));
 

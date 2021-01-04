@@ -128,7 +128,7 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
     return toolbar_items;
 }
 
-ToolbarItem* create_default_toolbar_items()
+ToolbarItem* create_default_toolbar_items(void)
 {
     ToolbarItem *toolbar_items = NULL;
 

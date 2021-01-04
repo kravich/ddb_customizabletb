@@ -577,7 +577,7 @@ static ContextRecord contexes[] =
     { NULL, NULL }
 };
 
-static GtkTreeModel* create_categories_list_store()
+static GtkTreeModel* create_categories_list_store(void)
 {
     GtkListStore *categories_list = gtk_list_store_new(CATEGORIES_COLS_NUM, G_TYPE_STRING, G_TYPE_OBJECT);
 

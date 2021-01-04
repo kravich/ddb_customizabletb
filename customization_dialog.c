@@ -141,7 +141,7 @@ static gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeI
     return iter_found;
 }
 
-static GtkTreeStore* create_actions_tree_store()
+static GtkTreeStore* create_actions_tree_store(void)
 {
     GtkTreeStore *actions_tree_store = gtk_tree_store_new(ACTIONS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
 
