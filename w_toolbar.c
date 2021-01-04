@@ -87,7 +87,7 @@ static void extract_layout_param(const char *params, char *buff, size_t buff_siz
 
     GError *error = NULL;
     GRegex *regex = g_regex_new("\\s*layout\\s*=\\s*\\\"(.*)\\\"\\s*", 0, 0, &error);
-    if (error != NULL)
+    if (error)
     {
         trace("Failed to compile regex: %s\n", error->message);
         g_error_free(error);
@@ -123,7 +123,7 @@ static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const
 
     ToolbarItem *saved_toolbar_items = toolbar_items_deserialize(layout_str);
 
-    if (saved_toolbar_items != NULL)
+    if (saved_toolbar_items)
     {
         free_items_list(toolbar->items_list);
         toolbar->items_list = saved_toolbar_items;
@@ -186,7 +186,7 @@ static void toolbar_button_activate_action(GtkButton *button, gpointer user_data
 {
     ToolbarItem *item = (ToolbarItem*)user_data;
 
-    assert(item->action != NULL);
+    assert(item->action);
 
     if (item->action->callback)
         activate_action_14(item->action, -1);
@@ -214,7 +214,7 @@ static void fill_toolbar(w_toolbar_t *toolbar)
     GtkBox *hbox = GTK_BOX(toolbar->base.widget);
 
     ToolbarItem *current_item = toolbar->items_list;
-    while (current_item != NULL)
+    while (current_item)
     {
         GtkWidget *button = gtk_button_new();
         gtk_widget_set_can_focus(button, FALSE);
@@ -224,12 +224,12 @@ static void fill_toolbar(w_toolbar_t *toolbar)
         gtk_box_pack_start(hbox, button, FALSE, FALSE, 0);
 
         GtkWidget *image = create_image_by_name(current_item->icon_name, TOOLBAR_ICON_SIZE);
-        assert(image != NULL);
+        assert(image);
 
         gtk_widget_show(image);
         gtk_container_add(GTK_CONTAINER(button), image);
 
-        if (current_item->action != NULL)
+        if (current_item->action)
         {
             g_signal_connect(button, "clicked", G_CALLBACK(toolbar_button_activate_action), current_item);
         }
@@ -259,7 +259,7 @@ static void empty_hbox(GtkBox *hbox)
 {
     GList *list = gtk_container_get_children(GTK_CONTAINER(hbox));
 
-    for (GList *it = list; it != NULL; it = g_list_next(it)) {
+    for (GList *it = list; it; it = g_list_next(it)) {
         gtk_widget_destroy(GTK_WIDGET(it->data));
     }
 
@@ -286,7 +286,7 @@ static void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
     GtkWindow *mainwin = GTK_WINDOW(g_gtkui->get_mainwin());
 
     ToolbarItem *new_toolbar_items = run_customization_dialog(mainwin, toolbar->items_list);
-    if (new_toolbar_items != NULL)
+    if (new_toolbar_items)
         w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }
 

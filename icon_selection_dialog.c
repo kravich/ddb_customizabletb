@@ -584,12 +584,12 @@ static GtkTreeModel* create_categories_list_store(void)
     GtkIconTheme *default_icon_theme = gtk_icon_theme_get_default();
 
     ContextRecord *current_context = contexes;
-    while (current_context->context_name != NULL)
+    while (current_context->context_name)
     {
         GtkListStore *icons_list = gtk_list_store_new(ICONS_COLS_NUM, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 
         const char **current_icon_name_ptr = current_context->icon_names_arr;
-        while (*current_icon_name_ptr != NULL)
+        while (*current_icon_name_ptr)
         {
             const char *icon_name = *current_icon_name_ptr;
 
@@ -606,7 +606,7 @@ static GtkTreeModel* create_categories_list_store(void)
                                                        GTK_ICON_LOOKUP_FORCE_SIZE,
                                                        &error);
 
-            if (error != NULL)
+            if (error)
             {
                 trace("Failed to create icon %s: %s\n", icon_name, error->message);
                 g_error_free(error);
@@ -659,7 +659,7 @@ static void on_categories_selection_changed(GtkTreeSelection *categories_selecti
 
     gtk_tree_model_get(categories_list, &iter, CATEGORIES_COL_ICONVIEW_MODEL, &icons_list, -1);
 
-    assert(icons_list != NULL);
+    assert(icons_list);
 
     gtk_icon_view_set_model(iconview, icons_list);
 
@@ -671,12 +671,12 @@ static void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_d
     GtkWidget *dialog = GTK_WIDGET(user_data);
     GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
 
-    assert(ok_button != NULL);
+    assert(ok_button);
 
     GList *selected_items = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(iconview));
 
     gboolean single_item_selected = FALSE;
-    if (selected_items != NULL && selected_items->next == NULL)
+    if (selected_items && selected_items->next == NULL)
         single_item_selected = TRUE;
 
     g_list_free_full(selected_items, (GDestroyNotify)gtk_tree_path_free);
@@ -692,8 +692,8 @@ static void setup_icon_selection_dialog(GtkWidget *dialog)
     GtkWidget *categories_treeview = lookup_widget(dialog, "categories_treeview");
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
 
-    assert(categories_treeview != NULL);
-    assert(iconview != NULL);
+    assert(categories_treeview);
+    assert(iconview);
 
     // setup list of categories
     GtkTreeViewColumn *category_name_col = gtk_tree_view_column_new();
@@ -735,7 +735,7 @@ static void setup_icon_selection_dialog(GtkWidget *dialog)
 static char* get_selected_icon(GtkWidget *dialog)
 {
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
-    assert(iconview != NULL);
+    assert(iconview);
 
     GtkTreeModel *icons_list = gtk_icon_view_get_model(GTK_ICON_VIEW(iconview));
 
@@ -754,14 +754,14 @@ static char* get_selected_icon(GtkWidget *dialog)
     char *icon_name = NULL;
     gtk_tree_model_get(icons_list, &iter, ICONS_COL_NAME, &icon_name, -1);
 
-    assert(icon_name != NULL);
+    assert(icon_name);
 
     return icon_name;
 }
 
 char* run_icon_selection_dialog(GtkWindow *parent, const char *current_icon_name)
 {
-    assert(current_icon_name != NULL);
+    assert(current_icon_name);
 
     GtkWidget *d = create_icon_selection_dialog();
 

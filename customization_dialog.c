@@ -81,12 +81,12 @@ static GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
                                                   G_TYPE_BOOLEAN);
 
     ToolbarItem *current_item = toolbar_items;
-    while (current_item != NULL)
+    while (current_item)
     {
         const char *action_title = current_item->action_name;
         gboolean was_action_found = FALSE;
 
-        if (current_item->action != NULL)
+        if (current_item->action)
         {
             action_title = current_item->action->title;
             was_action_found = TRUE;
@@ -200,7 +200,7 @@ static GtkTreeStore* create_actions_tree_store(void)
 
     DB_plugin_t **plugins = g_deadbeef->plug_get_list();
 
-    for (int plug_i = 0; plugins[plug_i] != NULL; plug_i++)
+    for (int plug_i = 0; plugins[plug_i]; plug_i++)
     {
         DB_plugin_t *curr_plugin = plugins[plug_i];
 
@@ -209,14 +209,14 @@ static GtkTreeStore* create_actions_tree_store(void)
 
         DB_plugin_action_t *actions = curr_plugin->get_actions(NULL);
         DB_plugin_action_t *curr_action = actions;
-        while (curr_action != NULL)
+        while (curr_action)
         {
             char **name_parts = g_strsplit(curr_action->title, "/", 2);
 
             char *group_name = NULL;
             char *action_title = NULL;
 
-            if (name_parts[1] != NULL)   // action title has group specified in name
+            if (name_parts[1])   // action title has group specified in name
             {
                 group_name = name_parts[0];
                 action_title = name_parts[1];
@@ -235,7 +235,7 @@ static GtkTreeStore* create_actions_tree_store(void)
 
                 GtkTreeIter action_iter;
 
-                if (group_name != NULL)
+                if (group_name)
                 {
                     GtkTreeIter group_iter;
 
@@ -408,8 +408,8 @@ static void on_button_add_clicked(GtkButton *button, gpointer user_data)
     GtkWidget *items_treeview = lookup_widget(d, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(d, "actions_treeview");
 
-    assert(items_treeview != NULL);
-    assert(actions_treeview != NULL);
+    assert(items_treeview);
+    assert(actions_treeview);
 
     GtkTreeSelection *actions_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(actions_treeview));
 
@@ -547,7 +547,7 @@ static void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     GtkDialog *dialog = GTK_DIALOG(user_data);
 
     GtkWidget *items_treeview = lookup_widget(GTK_WIDGET(dialog), "items_treeview");
-    assert(items_treeview != NULL);
+    assert(items_treeview);
 
     GtkTreeSelection *items_selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(items_treeview));
 
@@ -567,7 +567,7 @@ static void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     char *new_icon_name = run_icon_selection_dialog(GTK_WINDOW(dialog), icon_name);
     g_free(icon_name);
 
-    if (new_icon_name != NULL)
+    if (new_icon_name)
     {
         GdkPixbuf *new_icon_pixbuf = create_pixbuf_by_icon_name(new_icon_name, 16);
 
@@ -589,10 +589,10 @@ static void on_items_selection_changed(GtkTreeSelection *items_selection, gpoint
     GtkWidget *button_remove = lookup_widget(dialog, "button_remove");
     GtkWidget *button_change_icon = lookup_widget(dialog, "button_change_icon");
 
-    assert(button_up != NULL);
-    assert(button_down != NULL);
-    assert(button_remove != NULL);
-    assert(button_change_icon != NULL);
+    assert(button_up);
+    assert(button_down);
+    assert(button_remove);
+    assert(button_change_icon);
 
     if (gtk_tree_selection_count_selected_rows(items_selection) == 1)
     {
@@ -615,7 +615,7 @@ static void on_actions_selection_changed(GtkTreeSelection *actions_selection, gp
     GtkWidget *dialog = GTK_WIDGET(user_data);
     GtkWidget *button_add = lookup_widget(dialog, "button_add");
 
-    assert(button_add != NULL);
+    assert(button_add);
 
     if (gtk_tree_selection_count_selected_rows(actions_selection) != 1)
     {
@@ -650,13 +650,13 @@ static void dialog_connect_signals(GtkWidget *dialog)
     GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
 
-    assert(button_add != NULL);
-    assert(button_remove != NULL);
-    assert(button_up != NULL);
-    assert(button_down != NULL);
-    assert(button_change_icon != NULL);
-    assert(items_treeview != NULL);
-    assert(actions_treeview != NULL);
+    assert(button_add);
+    assert(button_remove);
+    assert(button_up);
+    assert(button_down);
+    assert(button_change_icon);
+    assert(items_treeview);
+    assert(actions_treeview);
 
     g_signal_connect(button_add, "clicked", G_CALLBACK(on_button_add_clicked), dialog);
     g_signal_connect(button_remove, "clicked", G_CALLBACK(on_button_remove_clicked), items_treeview);
@@ -674,7 +674,7 @@ static void dialog_connect_signals(GtkWidget *dialog)
 static void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
 {
     GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
-    assert(ok_button != NULL);
+    assert(ok_button);
 
     GtkTreeIter iter;
     if (gtk_tree_model_get_iter_first(items_list, &iter) == TRUE)
@@ -700,8 +700,8 @@ static void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTr
     GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");
 
-    assert(items_treeview != NULL);
-    assert(actions_treeview != NULL);
+    assert(items_treeview);
+    assert(actions_treeview);
 
     init_items_treeview(GTK_TREE_VIEW(items_treeview));
     gtk_tree_view_set_model(GTK_TREE_VIEW(items_treeview), GTK_TREE_MODEL(items_list_store));

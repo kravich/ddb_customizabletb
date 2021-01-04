@@ -34,11 +34,11 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
     buff[0] = '\0';
 
     ToolbarItem *current_item = toolbar_items;
-    while (current_item != NULL)
+    while (current_item)
     {
         char *fmt = NULL;
 
-        if (current_item->next != NULL)
+        if (current_item->next)
             fmt = "%s|%d|%s,";
         else
             fmt = "%s|%d|%s";
@@ -65,12 +65,12 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
 
 static int strings_count(char **strings_arr)
 {
-    assert(strings_arr != NULL);
+    assert(strings_arr);
 
     int count = 0;
 
     char **curr_string = strings_arr;
-    while (*curr_string != NULL)
+    while (*curr_string)
     {
         count++;
         curr_string++;
@@ -86,7 +86,7 @@ ToolbarItem* toolbar_items_deserialize(char *layout)
     char **elements = g_strsplit(layout, ",", -1);
 
     char **current_element = elements;
-    while (*current_element != NULL)
+    while (*current_element)
     {
         ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
 
@@ -167,7 +167,7 @@ ToolbarItem* create_default_toolbar_items(void)
 void free_items_list(ToolbarItem *items_list)
 {
     ToolbarItem *current_item = items_list;
-    while (current_item != NULL)
+    while (current_item)
     {
         ToolbarItem *next_item = current_item->next;
 
@@ -187,7 +187,7 @@ ToolbarItem* toolbar_items_append(ToolbarItem* items, ToolbarItem *new_item)
     }
 
     ToolbarItem *last_item = items;
-    while (last_item->next != NULL)
+    while (last_item->next)
         last_item = last_item->next;
 
     last_item->next = new_item;

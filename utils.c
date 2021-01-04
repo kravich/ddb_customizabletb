@@ -31,7 +31,7 @@ DB_plugin_action_t* find_action(const char *action_name)
 {
     DB_plugin_t **plugins = g_deadbeef->plug_get_list();
 
-    for (int i = 0; plugins[i] != NULL; i++)
+    for (int i = 0; plugins[i]; i++)
     {
         if (plugins[i]->get_actions == NULL)
             continue;
@@ -39,7 +39,7 @@ DB_plugin_action_t* find_action(const char *action_name)
         DB_plugin_action_t *plugin_actions = plugins[i]->get_actions(NULL);
 
         DB_plugin_action_t *current_action = plugin_actions;
-        while (current_action != NULL)
+        while (current_action)
         {
             if (g_str_equal(current_action->name, action_name))
             {
@@ -70,7 +70,7 @@ GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px)
         pixbuf = gtk_icon_theme_load_icon(default_icon_theme, "image-missing", icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error); // TODO: is it bulletproof or could also fail?
     }
 	
-	assert(pixbuf != NULL);
+	assert(pixbuf);
 
     return pixbuf;
 }
