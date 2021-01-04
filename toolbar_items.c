@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "utils.h"
 
@@ -63,67 +64,175 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
     }
 }
 
-static int strings_count(char **strings_arr)
+static bool isnamechar(char c)
 {
-    assert(strings_arr);
-
-    int count = 0;
-
-    char **curr_string = strings_arr;
-    while (*curr_string)
-    {
-        count++;
-        curr_string++;
-    }
-
-    return count;
+    return !g_ascii_iscntrl(c) && c != '|' && c != ',' && c != ' ';
 }
 
-ToolbarItem* toolbar_items_deserialize(char *layout)
+ToolbarItem* toolbar_items_deserialize_len(const char *layout, size_t len)
 {
+    enum
+    {
+        STATE_ITEM_SEPARATOR,   // also an initial and a final state
+        STATE_ACTION_NAME,
+        STATE_ACTION_NAME_SEPARATOR,
+        STATE_CONTEXT,
+        STATE_CONTEXT_SEPARATOR,
+        STATE_ICON_NAME,
+        STATE_ERROR
+    };
+
+    int state = STATE_ITEM_SEPARATOR;
+
+    const char *action_name = NULL;
+    size_t action_name_len = 0;
+
+    const char *context_str = NULL;
+    size_t context_str_len = 0;
+
+    const char *icon_name = NULL;
+    size_t icon_name_len = 0;
+
     ToolbarItem *toolbar_items = NULL;
 
-    char **elements = g_strsplit(layout, ",", -1);
-
-    char **current_element = elements;
-    while (*current_element)
+    for (size_t i = 0; i <= len && state != STATE_ERROR; i++)
     {
-        ToolbarItem *item = g_malloc(sizeof(ToolbarItem));
+        char c = layout[i];
 
-        char **parts = g_strsplit(*current_element, "|", -1);
+        if (i == len)
+            c = ','; // synthetic separator to finalize creation of last item
 
-        if (strings_count(parts) != 3)
-            goto on_error;
+        switch (state)
+        {
+            case STATE_ITEM_SEPARATOR:
+                if (isnamechar(c))
+                {
+                    action_name = layout + i;
+                    action_name_len++;
+                    state = STATE_ACTION_NAME;
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
 
-        char *action_name = parts[0];
-        char *icon_name = parts[2];
-        int action_context = atoi(parts[1]);
+            case STATE_ACTION_NAME:
+                if (isnamechar(c))
+                {
+                    action_name_len++;
+                }
+                else if (c == '|')
+                {
+                    state = STATE_ACTION_NAME_SEPARATOR;
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
 
-        if (action_context < DDB_ACTION_CTX_MAIN || action_context > DDB_ACTION_CTX_NOWPLAYING)
-            goto on_error;
+            case STATE_ACTION_NAME_SEPARATOR:
+                if (g_ascii_isdigit(c))
+                {
+                    context_str = layout + i;
+                    context_str_len++;
+                    state = STATE_CONTEXT;
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
 
-        item->action_name = g_strdup(action_name);
-        item->icon_name = g_strdup(icon_name);
-        item->action = find_action(action_name);
-        item->action_context = action_context;
-        item->next = NULL;
+            case STATE_CONTEXT:
+                if (g_ascii_isdigit(c))
+                {
+                    context_str_len++;
+                }
+                else if (c == '|')
+                {
+                    state = STATE_CONTEXT_SEPARATOR;
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
 
-        g_strfreev(parts);
+            case STATE_CONTEXT_SEPARATOR:
+                if (isnamechar(c))
+                {
+                    icon_name = layout + i;
+                    icon_name_len++;
+                    state = STATE_ICON_NAME;
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
 
-        toolbar_items = toolbar_items_append(toolbar_items, item);
+            case STATE_ICON_NAME:
+                if (isnamechar(c))
+                {
+                    icon_name_len++;
+                }
+                else if (c == ',')
+                {
+                    int context = strtoi_len(context_str, context_str_len);
 
-        current_element++;
-        continue;
+                    if (DDB_ACTION_CTX_MAIN <= context && context <= DDB_ACTION_CTX_NOWPLAYING)
+                    {
+                        assert(action_name);
+                        assert(context_str);
+                        assert(icon_name);
 
-    on_error:
-        g_strfreev(parts);
-        g_strfreev(elements);
-        free_items_list(toolbar_items);
-        g_free(item);
-        return NULL;
+                        assert(action_name_len);
+                        assert(context_str_len);
+                        assert(icon_name_len);
+
+                        // produce item object
+                        ToolbarItem *item = g_malloc0(sizeof(ToolbarItem));
+
+                        item->action_name = strdup_len(action_name, action_name_len);
+                        item->action_context = context;
+                        item->icon_name = strdup_len(icon_name, icon_name_len);
+
+                        item->action = find_action(item->action_name);
+
+                        toolbar_items = toolbar_items_append(toolbar_items, item);
+
+                        // reset
+                        action_name = NULL;
+                        action_name_len = 0;
+
+                        context_str = NULL;
+                        context_str_len = 0;
+
+                        icon_name = NULL;
+                        icon_name_len = 0;
+
+                        state = STATE_ITEM_SEPARATOR;
+                    }
+                    else
+                    {
+                        state = STATE_ERROR;
+                    }
+                }
+                else
+                {
+                    state = STATE_ERROR;
+                }
+                break;
+        }
     }
 
-    g_strfreev(elements);
+    if (state != STATE_ITEM_SEPARATOR) // error state
+    {
+        free_items_list(toolbar_items);
+        toolbar_items = NULL;
+    }
 
     return toolbar_items;
 }

@@ -121,7 +121,7 @@ static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const
     char layout_str[TMP_BUFF_SIZE] = {0};
     extract_layout_param(params, layout_str, TMP_BUFF_SIZE);
 
-    ToolbarItem *saved_toolbar_items = toolbar_items_deserialize(layout_str);
+    ToolbarItem *saved_toolbar_items = toolbar_items_deserialize_len(layout_str, strlen(layout_str));
 
     if (saved_toolbar_items)
     {

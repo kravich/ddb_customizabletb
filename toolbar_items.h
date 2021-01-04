@@ -37,7 +37,7 @@ typedef struct _ToolbarItem
 } ToolbarItem;
 
 void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff_size);
-ToolbarItem* toolbar_items_deserialize(char *layout);
+ToolbarItem* toolbar_items_deserialize_len(const char *layout, size_t len);
 ToolbarItem* create_default_toolbar_items(void);
 void free_items_list(ToolbarItem *items_list);
 

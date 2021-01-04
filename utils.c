@@ -69,7 +69,7 @@ GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px)
         trace("Current theme does not have icon %s\n", icon_name);
         pixbuf = gtk_icon_theme_load_icon(default_icon_theme, "image-missing", icon_size_px, GTK_ICON_LOOKUP_FORCE_SIZE, &error); // TODO: is it bulletproof or could also fail?
     }
-	
+
 	assert(pixbuf);
 
     return pixbuf;
@@ -85,4 +85,29 @@ GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px)
     g_object_unref(icon_pixbuf);
 
     return image;
+}
+
+char* strdup_len(const char *str, size_t len)
+{
+    char *newstr = g_malloc(len + 1);
+    memcpy(newstr, str, len);
+    newstr[len] = '\0';
+    return newstr;
+}
+
+int strtoi_len(const char *str, size_t len)
+{
+    int num = 0;
+
+    for (size_t i = 0; i < len; i++)
+    {
+        int digit = str[i] - '0';
+
+        if (digit < 0 || digit > 9)
+            return 0;
+
+        num = num * 10 + digit ;
+    }
+
+    return num;
 }

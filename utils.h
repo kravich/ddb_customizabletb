@@ -31,4 +31,8 @@ GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px);
 
 GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px);
 
+char* strdup_len(const char *str, size_t len);
+
+int strtoi_len(const char *str, size_t len);
+
 #endif
