@@ -63,7 +63,7 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
     }
 }
 
-int strings_count(char **strings_arr)
+static int strings_count(char **strings_arr)
 {
     assert(strings_arr != NULL);
 

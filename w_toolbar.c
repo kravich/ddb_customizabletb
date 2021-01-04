@@ -47,15 +47,14 @@ typedef struct
     ToolbarItem *items_list;
 } w_toolbar_t;
 
-
-void w_toolbar_destroy(ddb_gtkui_widget_t *w)
+static void w_toolbar_destroy(ddb_gtkui_widget_t *w)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
     free_items_list(toolbar->items_list);
 }
 
-const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
+static const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
 {
     const char *p = s;
     unsigned int n = 0;
@@ -80,7 +79,7 @@ const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
     return p;
 }
 
-void extract_layout_param(const char *params, char *buff, size_t buff_size)
+static void extract_layout_param(const char *params, char *buff, size_t buff_size)
 {
     assert(buff_size != 0);
 
@@ -112,7 +111,7 @@ void extract_layout_param(const char *params, char *buff, size_t buff_size)
     g_regex_unref(regex);
 }
 
-const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
+static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
@@ -133,7 +132,7 @@ const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *
     return p;
 }
 
-void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
+static void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
@@ -146,7 +145,7 @@ void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 }
 
 /* This function was copied from Deadbeef sources */
-void activate_action_14(DB_plugin_action_t *action, int cursor)
+static void activate_action_14(DB_plugin_action_t *action, int cursor)
 {
     // Plugin can handle all tracks by itself
     if (action->flags & DB_ACTION_CAN_MULTIPLE_TRACKS)
@@ -183,7 +182,7 @@ void activate_action_14(DB_plugin_action_t *action, int cursor)
     }
 }
 
-void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
+static void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
 {
     ToolbarItem *item = (ToolbarItem*)user_data;
 
@@ -195,7 +194,7 @@ void toolbar_button_activate_action(GtkButton *button, gpointer user_data)
         item->action->callback2(item->action, item->action_context);
 }
 
-void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
+static void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
 {
     GtkWindow *mainwin = GTK_WINDOW(g_gtkui->get_mainwin());
 
@@ -210,7 +209,7 @@ void toolbar_button_no_action_msg(GtkButton *button, gpointer user_data)
     gtk_widget_destroy(msgbox);
 }
 
-void fill_toolbar(w_toolbar_t *toolbar)
+static void fill_toolbar(w_toolbar_t *toolbar)
 {
     GtkBox *hbox = GTK_BOX(toolbar->base.widget);
 
@@ -247,7 +246,7 @@ void fill_toolbar(w_toolbar_t *toolbar)
     gtk_widget_set_size_request(toolbar->base.widget, -1, -1);
 }
 
-void w_toolbar_init(ddb_gtkui_widget_t *w)
+static void w_toolbar_init(ddb_gtkui_widget_t *w)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
@@ -256,7 +255,7 @@ void w_toolbar_init(ddb_gtkui_widget_t *w)
     gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), g_gtkui->w_override_signals, w);
 }
 
-void empty_hbox(GtkBox *hbox)
+static void empty_hbox(GtkBox *hbox)
 {
     GList *list = gtk_container_get_children(GTK_CONTAINER(hbox));
 
@@ -267,7 +266,7 @@ void empty_hbox(GtkBox *hbox)
     g_list_free(list);
 }
 
-void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
+static void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_items)
 {
     if(new_toolbar_items == NULL)
         return;
@@ -280,7 +279,7 @@ void w_toolbar_set_new_items(w_toolbar_t *toolbar, ToolbarItem *new_toolbar_item
     gtk_container_foreach(GTK_CONTAINER(toolbar->base.widget), g_gtkui->w_override_signals, toolbar);
 }
 
-void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
+static void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)user_data;
 
@@ -291,7 +290,7 @@ void on_customize_activate(GtkMenuItem *menuitem, gpointer user_data)
         w_toolbar_set_new_items(toolbar, new_toolbar_items);
 }
 
-void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
+static void w_toolbar_initmenu(ddb_gtkui_widget_t *w, GtkWidget *menu)
 {
     GtkWidget *customize_menu_item = gtk_menu_item_new_with_mnemonic("Customize");
     gtk_widget_show(customize_menu_item);

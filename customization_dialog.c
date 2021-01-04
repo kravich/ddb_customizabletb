@@ -54,7 +54,7 @@ enum
     ACTIONS_COLS_NUM
 };
 
-const char* get_context_name_by_id(int context)
+static const char* get_context_name_by_id(int context)
 {
     assert(context >= 0 && context < DDB_ACTION_CTX_COUNT);
 
@@ -69,7 +69,7 @@ const char* get_context_name_by_id(int context)
     return context_names[context];
 }
 
-GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
+static GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
 {
     GtkListStore *items_list = gtk_list_store_new(ITEMS_COLS_NUM,
                                                   GDK_TYPE_PIXBUF,
@@ -115,7 +115,7 @@ GtkListStore* create_items_list_store(ToolbarItem *toolbar_items)
     return items_list;
 }
 
-gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeIter *ctx_group_iter, char *required_group_name, GtkTreeIter *iter)
+static gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeIter *ctx_group_iter, char *required_group_name, GtkTreeIter *iter)
 {
     gboolean iter_found = FALSE;
 
@@ -141,7 +141,7 @@ gboolean actions_tree_find_group_entry(GtkTreeModel *tree_model, GtkTreeIter *ct
     return iter_found;
 }
 
-GtkTreeStore* create_actions_tree_store()
+static GtkTreeStore* create_actions_tree_store()
 {
     GtkTreeStore *actions_tree_store = gtk_tree_store_new(ACTIONS_COLS_NUM, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
 
@@ -277,11 +277,11 @@ GtkTreeStore* create_actions_tree_store()
     return actions_tree_store;
 }
 
-void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
-                        GtkCellRenderer *item_pixbuf_cell_renderer,
-                        GtkTreeModel *tree_model,
-                        GtkTreeIter *iter,
-                        gpointer data)
+static void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
+                               GtkCellRenderer *item_pixbuf_cell_renderer,
+                               GtkTreeModel *tree_model,
+                               GtkTreeIter *iter,
+                               gpointer data)
 {
     GdkPixbuf *item_pixbuf = NULL;
     gboolean was_action_found = FALSE;
@@ -301,11 +301,11 @@ void ItemPixbufDataFunc(GtkTreeViewColumn *action_title_column,
         g_object_set(item_pixbuf_cell_renderer, "sensitive", FALSE, NULL);
 }
 
-void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
-                         GtkCellRenderer *action_title_cell_renderer,
-                         GtkTreeModel *tree_model,
-                         GtkTreeIter *iter,
-                         gpointer data)
+static void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
+                                GtkCellRenderer *action_title_cell_renderer,
+                                GtkTreeModel *tree_model,
+                                GtkTreeIter *iter,
+                                gpointer data)
 {
     char *item_title = NULL;
     gboolean was_action_found = FALSE;
@@ -334,7 +334,7 @@ void ActionTitleDataFunc(GtkTreeViewColumn *action_title_column,
     g_free(item_title);
 }
 
-void init_items_treeview(GtkTreeView *items_treeview)
+static void init_items_treeview(GtkTreeView *items_treeview)
 {
     GtkTreeViewColumn *action_title_column = gtk_tree_view_column_new();
     GtkCellRenderer *icon_renderer = gtk_cell_renderer_pixbuf_new();
@@ -353,7 +353,7 @@ void init_items_treeview(GtkTreeView *items_treeview)
     gtk_tree_view_append_column(items_treeview, action_title_column);
 }
 
-void init_actions_treeview(GtkTreeView *actions_tree_view)
+static void init_actions_treeview(GtkTreeView *actions_tree_view)
 {
     GtkTreeViewColumn *action_name_column = gtk_tree_view_column_new();
     GtkCellRenderer *action_name_renderer = gtk_cell_renderer_text_new();
@@ -365,7 +365,7 @@ void init_actions_treeview(GtkTreeView *actions_tree_view)
     gtk_tree_view_append_column(actions_tree_view, action_name_column);
 }
 
-ToolbarItem* extract_items_from_list(GtkListStore *items_list)
+static ToolbarItem* extract_items_from_list(GtkListStore *items_list)
 {
     GtkTreeIter row_iter;
     ToolbarItem *new_items = NULL;
@@ -399,7 +399,7 @@ ToolbarItem* extract_items_from_list(GtkListStore *items_list)
     return new_items;
 }
 
-void on_button_add_clicked(GtkButton *button, gpointer user_data)
+static void on_button_add_clicked(GtkButton *button, gpointer user_data)
 {
     assert(GTK_IS_DIALOG(user_data));
 
@@ -468,7 +468,7 @@ void on_button_add_clicked(GtkButton *button, gpointer user_data)
     g_object_unref(new_item_icon);
 }
 
-void on_button_remove_clicked(GtkButton *button, gpointer user_data)
+static void on_button_remove_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
@@ -484,7 +484,7 @@ void on_button_remove_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_remove(GTK_LIST_STORE(items_list), &selected_iter);
 }
 
-void on_button_up_clicked(GtkButton *button, gpointer user_data)
+static void on_button_up_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
@@ -512,7 +512,7 @@ void on_button_up_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_swap(GTK_LIST_STORE(items_list), &selected_iter, &prev_row_iter);
 }
 
-void on_button_down_clicked(GtkButton *button, gpointer user_data)
+static void on_button_down_clicked(GtkButton *button, gpointer user_data)
 {
     GtkTreeView *items_treeview = GTK_TREE_VIEW(user_data);
 
@@ -540,7 +540,7 @@ void on_button_down_clicked(GtkButton *button, gpointer user_data)
     gtk_list_store_swap(GTK_LIST_STORE(items_list), &selected_iter, &next_row_iter);
 }
 
-void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
+static void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
 {
     assert(GTK_IS_DIALOG(user_data));
 
@@ -581,7 +581,7 @@ void on_button_change_icon_clicked(GtkButton *button, gpointer user_data)
     }
 }
 
-void on_items_selection_changed(GtkTreeSelection *items_selection, gpointer user_data)
+static void on_items_selection_changed(GtkTreeSelection *items_selection, gpointer user_data)
 {
     GtkWidget *dialog = GTK_WIDGET(user_data);
     GtkWidget *button_up = lookup_widget(dialog, "button_up");
@@ -610,7 +610,7 @@ void on_items_selection_changed(GtkTreeSelection *items_selection, gpointer user
     }
 }
 
-void on_actions_selection_changed(GtkTreeSelection *actions_selection, gpointer user_data)
+static void on_actions_selection_changed(GtkTreeSelection *actions_selection, gpointer user_data)
 {
     GtkWidget *dialog = GTK_WIDGET(user_data);
     GtkWidget *button_add = lookup_widget(dialog, "button_add");
@@ -640,7 +640,7 @@ void on_actions_selection_changed(GtkTreeSelection *actions_selection, gpointer 
     g_free(action_name);
 }
 
-void dialog_connect_signals(GtkWidget *dialog)
+static void dialog_connect_signals(GtkWidget *dialog)
 {
     GtkWidget *button_add = lookup_widget(dialog, "button_add");
     GtkWidget *button_remove = lookup_widget(dialog, "button_remove");
@@ -671,7 +671,7 @@ void dialog_connect_signals(GtkWidget *dialog)
     g_signal_connect(actions_selection, "changed", G_CALLBACK(on_actions_selection_changed), dialog);
 }
 
-void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
+static void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
 {
     GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
     assert(ok_button != NULL);
@@ -683,19 +683,19 @@ void update_ok_button_state(GtkTreeModel *items_list, GtkWidget *dialog)
         gtk_widget_set_sensitive(ok_button, FALSE);
 }
 
-void on_items_list_row_deleted(GtkTreeModel *items_list, GtkTreePath *path, gpointer user_data)
+static void on_items_list_row_deleted(GtkTreeModel *items_list, GtkTreePath *path, gpointer user_data)
 {
     GtkWidget *dialog = GTK_WIDGET(user_data);
     update_ok_button_state(items_list, dialog);
 }
 
-void on_items_list_row_inserted(GtkTreeModel *items_list, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data)
+static void on_items_list_row_inserted(GtkTreeModel *items_list, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data)
 {
     GtkWidget *dialog = GTK_WIDGET(user_data);
     update_ok_button_state(items_list, dialog);
 }
 
-void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
+static void dialog_init(GtkWidget *dialog, GtkListStore *items_list_store, GtkTreeStore *actions_tree_store)
 {
     GtkWidget *items_treeview = lookup_widget(dialog, "items_treeview");
     GtkWidget *actions_treeview = lookup_widget(dialog, "actions_treeview");

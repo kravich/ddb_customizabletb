@@ -41,7 +41,7 @@ enum
     ICONS_COLS_NUM
 };
 
-const char* volume_icons[] =
+static const char* volume_icons[] =
 {
     "audio-volume-high",
     "audio-volume-low",
@@ -54,7 +54,7 @@ const char* volume_icons[] =
     NULL
 };
 
-const char* multimedia_icons[] =
+static const char* multimedia_icons[] =
 {
     "media-playlist-repeat",
     "media-playlist-repeat-song",
@@ -73,7 +73,7 @@ const char* multimedia_icons[] =
     NULL
 };
 
-const char* network_icons[] =
+static const char* network_icons[] =
 {
     "network-transmit-receive",
     "network-transmit",
@@ -83,7 +83,7 @@ const char* network_icons[] =
     "network-offline",
 };
 
-const char* weather_icons[] =
+static const char* weather_icons[] =
 {
     "weather-clear",
     "weather-clear-night",
@@ -99,7 +99,7 @@ const char* weather_icons[] =
     NULL
 };
 
-const char* navigation_icons[] =
+static const char* navigation_icons[] =
 {
     "go-first",
     "go-previous",
@@ -114,7 +114,7 @@ const char* navigation_icons[] =
     NULL
 };
 
-const char* editing_icons[] =
+static const char* editing_icons[] =
 {
     "format-indent-less",
     "format-indent-more",
@@ -161,7 +161,7 @@ const char* editing_icons[] =
     NULL
 };
 
-const char* view_constols_icons[] =
+static const char* view_constols_icons[] =
 {
     "view-list",
     "view-grid",
@@ -178,7 +178,7 @@ const char* view_constols_icons[] =
     NULL
 };
 
-const char* calendar_icons[] =
+static const char* calendar_icons[] =
 {
     "task-due",
     "task-past-due",
@@ -188,7 +188,7 @@ const char* calendar_icons[] =
     NULL
 };
 
-const char* communication_icons[] =
+static const char* communication_icons[] =
 {
     "mail-unread",
     "mail-read",
@@ -210,7 +210,7 @@ const char* communication_icons[] =
     NULL
 };
 
-const char* devices_and_media_icons[] =
+static const char* devices_and_media_icons[] =
 {
     "audio-input-microphone",
     "camera-web",
@@ -245,7 +245,7 @@ const char* devices_and_media_icons[] =
     NULL
 };
 
-const char* content_types_icons[] =
+static const char* content_types_icons[] =
 {
     "application-certificate",
     "application-rss+xml",
@@ -258,7 +258,7 @@ const char* content_types_icons[] =
     NULL
 };
 
-const char* emotes_icons[] =
+static const char* emotes_icons[] =
 {
     "face-angel",
     "face-angry",
@@ -286,7 +286,7 @@ const char* emotes_icons[] =
     NULL
 };
 
-const char* general_icons[] =
+static const char* general_icons[] =
 {
     "edit-find",
     "content-loading",
@@ -331,7 +331,7 @@ const char* general_icons[] =
     NULL
 };
 
-const char* other_icons[] =
+static const char* other_icons[] =
 {
     "view-sort-ascending",
     "view-sort-descending",
@@ -558,7 +558,7 @@ typedef struct
     const char** icon_names_arr;
 } ContextRecord;
 
-ContextRecord contexes[] =
+static ContextRecord contexes[] =
 {
     { "Volume", volume_icons },
     { "Multimedia", multimedia_icons },
@@ -577,7 +577,7 @@ ContextRecord contexes[] =
     { NULL, NULL }
 };
 
-GtkTreeModel* create_categories_list_store()
+static GtkTreeModel* create_categories_list_store()
 {
     GtkListStore *categories_list = gtk_list_store_new(CATEGORIES_COLS_NUM, G_TYPE_STRING, G_TYPE_OBJECT);
 
@@ -641,7 +641,7 @@ GtkTreeModel* create_categories_list_store()
     return GTK_TREE_MODEL(categories_list);
 }
 
-void on_categories_selection_changed(GtkTreeSelection *categories_selection, gpointer user_data)
+static void on_categories_selection_changed(GtkTreeSelection *categories_selection, gpointer user_data)
 {
     GtkIconView *iconview = GTK_ICON_VIEW(user_data);
 
@@ -666,7 +666,7 @@ void on_categories_selection_changed(GtkTreeSelection *categories_selection, gpo
     g_object_unref(icons_list);
 }
 
-void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_data)
+static void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_data)
 {
     GtkWidget *dialog = GTK_WIDGET(user_data);
     GtkWidget *ok_button = lookup_widget(dialog, "ok_button");
@@ -687,7 +687,7 @@ void on_iconview_selection_changed(GtkIconView *iconview, gpointer user_data)
         gtk_widget_set_sensitive(ok_button, FALSE);
 }
 
-void setup_icon_selection_dialog(GtkWidget *dialog)
+static void setup_icon_selection_dialog(GtkWidget *dialog)
 {
     GtkWidget *categories_treeview = lookup_widget(dialog, "categories_treeview");
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
@@ -732,7 +732,7 @@ void setup_icon_selection_dialog(GtkWidget *dialog)
     g_object_unref(categories_list);
 }
 
-char* get_selected_icon(GtkWidget *dialog)
+static char* get_selected_icon(GtkWidget *dialog)
 {
     GtkWidget *iconview = lookup_widget(dialog, "iconview");
     assert(iconview != NULL);
