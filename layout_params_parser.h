@@ -1,6 +1,6 @@
 /*
     ddb_customizabletb - Customizable toolbar plugin for DeaDBeeF Music player
-    Copyright (C) 2015 Evgeny Kravchenko <cravchik@yandex.ru>
+    Copyright (C) 2021 Evgeny Kravchenko <cravchik@yandex.ru>
 
     This file is part of ddb_customizabletb.
 
@@ -18,25 +18,13 @@
     along with ddb_customizabletb.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef __LAYOUT_PARAMS_PARSER_H
+#define __LAYOUT_PARAMS_PARSER_H
 
-#include "dbapi.h"
+#include <stddef.h>
 
-#include <gtk/gtk.h>
+typedef void (*param_cb_t)(const char *key, size_t key_len, const char *value, size_t value_len, void *user_data);
 
-#include <stdbool.h>
-
-DB_plugin_action_t* find_action(const char *action_name);
-
-GdkPixbuf* create_pixbuf_by_icon_name(const char *icon_name, gint icon_size_px);
-
-GtkWidget* create_image_by_name(const char *button_icon_name, gint icon_size_px);
-
-char* strdup_len(const char *str, size_t len);
-
-int strtoi_len(const char *str, size_t len);
-
-bool strequal_len(const char *str1, size_t str1_len, const char *str2, size_t str2_len);
+const char* parse_params(const char *s, param_cb_t cb, void *user_data);
 
 #endif

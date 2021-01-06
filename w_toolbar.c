@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "trace.h"
 #include "support.h"
+#include "layout_params_parser.h"
 
 #define TMP_BUFF_SIZE 256
 
@@ -37,6 +38,12 @@
 #else
 #define TOOLBAR_ICON_SIZE 22
 #endif
+
+typedef struct
+{
+    const char *layout_str;
+    size_t layout_str_len;
+} parse_ctx_t;
 
 extern DB_functions_t *g_deadbeef;
 extern ddb_gtkui_t *g_gtkui;
@@ -54,79 +61,34 @@ static void w_toolbar_destroy(ddb_gtkui_widget_t *w)
     free_items_list(toolbar->items_list);
 }
 
-static const char* extract_widget_params(const char *s, char *buff, size_t buff_size)
+static void on_new_param(const char *key, size_t key_len, const char *value, size_t value_len, void *user_data)
 {
-    const char *p = s;
-    unsigned int n = 0;
+    parse_ctx_t *ctx = (parse_ctx_t*)user_data;
 
-    while ((*p != '\0') &&
-          (*p != '{'))
+    if (strequal_len(key, key_len, "layout", strlen("layout")))
     {
-        if (n < (buff_size - 1))
-        {
-            buff[n] = *p;
-            n++;
-        }
-
-        p++;
+        ctx->layout_str = value;
+        ctx->layout_str_len = value_len;
     }
-
-    buff[n] = '\0';
-
-    if (*p == '{')
-        p++;
-
-    return p;
-}
-
-static void extract_layout_param(const char *params, char *buff, size_t buff_size)
-{
-    assert(buff_size != 0);
-
-    buff[0] = '\0';
-
-    GError *error = NULL;
-    GRegex *regex = g_regex_new("\\s*layout\\s*=\\s*\\\"(.*)\\\"\\s*", 0, 0, &error);
-    if (error)
-    {
-        trace("Failed to compile regex: %s\n", error->message);
-        g_error_free(error);
-        return;
-    }
-
-    GMatchInfo *match_info = NULL;
-
-    if (!g_regex_match(regex, params, 0, &match_info))
-    {
-        trace("'layout' param was not found\n");
-        g_regex_unref(regex);
-        return;
-    }
-
-    char *param_value = g_match_info_fetch(match_info, 1);
-    strncpy(buff, param_value, buff_size - 1);
-
-    g_free(param_value);
-    g_match_info_free(match_info);
-    g_regex_unref(regex);
 }
 
 static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const char *s)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
-    char params[TMP_BUFF_SIZE] = {0};
-    const char *p = extract_widget_params(s, params, TMP_BUFF_SIZE);
+    parse_ctx_t parse_ctx = { NULL, 0 };
 
-    char layout_str[TMP_BUFF_SIZE] = {0};
-    extract_layout_param(params, layout_str, TMP_BUFF_SIZE);
+    const char *p = parse_params(s, on_new_param, &parse_ctx);
 
-    ToolbarItem *saved_toolbar_items = toolbar_items_deserialize_len(layout_str, strlen(layout_str));
-
-    if (saved_toolbar_items)
+    if (parse_ctx.layout_str)
     {
-        free_items_list(toolbar->items_list);
-        toolbar->items_list = saved_toolbar_items;
+        ToolbarItem *saved_toolbar_items = toolbar_items_deserialize_len(parse_ctx.layout_str, parse_ctx.layout_str_len);
+
+        if (saved_toolbar_items)
+        {
+            free_items_list(toolbar->items_list);
+            toolbar->items_list = saved_toolbar_items;
+        }
     }
 
     return p;

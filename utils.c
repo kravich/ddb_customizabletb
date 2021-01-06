@@ -111,3 +111,15 @@ int strtoi_len(const char *str, size_t len)
 
     return num;
 }
+
+bool strequal_len(const char *str1, size_t str1_len, const char *str2, size_t str2_len)
+{
+    if (str1_len != str2_len)
+        return false;
+
+    for (size_t i = 0; i < str1_len; i++)
+        if (str1[i] != str2[i])
+            return false;
+
+    return true;
+}

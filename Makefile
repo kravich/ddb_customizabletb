@@ -36,7 +36,8 @@ SOURCES = \
 	callbacks.c \
 	support.c \
 	customization_dialog.c \
-	icon_selection_dialog.c
+	icon_selection_dialog.c \
+	layout_params_parser.c
 
 OBJS_GTK2 = $(SOURCES:%.c=%_gtk2.o)
 OBJS_GTK3 = $(SOURCES:%.c=%_gtk3.o)
