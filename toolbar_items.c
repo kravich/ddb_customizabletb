@@ -27,11 +27,13 @@
 
 #include "utils.h"
 
-void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff_size)
+ssize_t toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff_size)
 {
     assert(buff_size != 0);
 
     size_t buff_free_space = buff_size - 1;
+    ssize_t bytes_written = 0;
+
     buff[0] = '\0';
 
     ToolbarItem *current_item = toolbar_items;
@@ -51,17 +53,24 @@ void toolbar_items_serialize(ToolbarItem *toolbar_items, char *buff, size_t buff
 
         size_t chars_to_add = strlen(item_str);
 
-        strncat(buff, item_str, buff_free_space);
+        if (buff_free_space >= chars_to_add)
+        {
+            strncat(buff, item_str, buff_free_space);
+            g_free(item_str);
 
-        g_free(item_str);
-
-        if (buff_free_space > chars_to_add)
             buff_free_space -= chars_to_add;
+            bytes_written += (ssize_t)chars_to_add;
+        }
         else
-            break;
+        {
+            g_free(item_str);
+            return -1;
+        }
 
         current_item = current_item->next;
     }
+
+    return bytes_written + 1;
 }
 
 static bool isnamechar(char c)

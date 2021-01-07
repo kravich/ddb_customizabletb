@@ -31,8 +31,6 @@
 #include "support.h"
 #include "layout_params_parser.h"
 
-#define TMP_BUFF_SIZE 256
-
 #if GTK_CHECK_VERSION(3,0,0)
 #define TOOLBAR_ICON_SIZE 16
 #else
@@ -94,16 +92,46 @@ static const char* w_toolbar_load(ddb_gtkui_widget_t *w, const char *type, const
     return p;
 }
 
+static void append_layout_param(ToolbarItem *items_list, char *s, int sz)
+{
+    size_t orig_s_len = strlen(s);
+
+    const char *pre = " layout=\"";
+    size_t pre_len = strlen(pre);
+
+    if (pre_len + 1 > sz)
+        return;
+
+    strncat(s, pre, pre_len);
+    sz -= pre_len;
+
+    ssize_t items_bytes_written = toolbar_items_serialize(items_list, s + orig_s_len + pre_len, sz);
+
+    if (items_bytes_written < 0)
+    {
+        s[orig_s_len] = '\0';
+        return;
+    }
+
+    sz -= items_bytes_written - 1;
+
+    const char *post = "\"";
+    size_t post_len = strlen(post);
+
+    if (post_len + 1 > sz)
+    {
+        s[orig_s_len] = '\0';
+        return;
+    }
+
+    strncat(s, post, post_len);
+}
+
 static void w_toolbar_save(ddb_gtkui_widget_t *w, char *s, int sz)
 {
     w_toolbar_t *toolbar = (w_toolbar_t*)w;
 
-    char serialized_layout[TMP_BUFF_SIZE] = {0};
-    toolbar_items_serialize(toolbar->items_list, serialized_layout, TMP_BUFF_SIZE);
-
-    char *layout_param = g_strdup_printf(" layout=\"%s\"", serialized_layout);
-    strncat(s, layout_param, sz);
-    g_free(layout_param);
+    append_layout_param(toolbar->items_list, s, sz);
 }
 
 /* This function was copied from Deadbeef sources */
